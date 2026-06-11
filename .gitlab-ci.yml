@@ -1,0 +1,60 @@
+## README !!!!
+### Please add the following variables to the project:
+### - CLIENT (name of client, for example the name of client is the image will be pushed to harbor.cloudias79.com/telkom/project-name-dev:latest)
+### - TYPE (java, other)
+### - ENV_FILE at Gitlab CICD Variables
+
+stages:
+  - build
+  - deploy
+
+variables:
+  CLIENT: "internal-virgo"
+
+.build:
+  stage: build
+  image: harbor.cloudias79.com/devops-tools/docker:29.0.0-dind
+  services:
+    - docker:dind
+  variables:
+    IMAGE_NAME: "$HARBOR_URL/$CLIENT/$CI_PROJECT_NAME-$CI_ENVIRONMENT_NAME:latest"
+    ENV_FILE_PATH_JAVA: $CI_PROJECT_DIR/src/main/resources/application.properties
+    ENV_FILE_PATH_NODE: $CI_PROJECT_DIR/.env
+  before_script:
+    - echo $HARBOR_PASS | docker login -u $HARBOR_USER --password-stdin $HARBOR_URL
+  script:
+    - docker build -t $IMAGE_NAME .
+    - docker push $IMAGE_NAME
+
+build-dev:
+  extends: .build
+  environment: development
+  only:
+    - development
+
+## Template script for Docker Compose Pull using SSH
+  ### Uses private key, host, and username variables
+.deploy-script: &deploy-script
+  tags:
+    - secops
+  variables:
+    SSH_PRIVATE_KEY_PATH: "~/.ssh/id_ed25519_secops"
+    DEPLOYMENT_LOCATION: "/app/$CI_ENVIRONMENT_NAME/$CLIENT/$CI_PROJECT_NAME"
+  before_script:
+    - cat $ENV_FILE > .env
+  script:
+    - scp -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no .env $DEPLOYER_USER@$DEPLOYER_HOST:$DEPLOYMENT_LOCATION/.env
+    - ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no $DEPLOYER_USER@$DEPLOYER_HOST "mkdir -p $DEPLOYMENT_LOCATION" || true
+    - scp -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ./compose.yml $DEPLOYER_USER@$DEPLOYER_HOST:$DEPLOYMENT_LOCATION/docker-compose.yml
+    - ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no $DEPLOYER_USER@$DEPLOYER_HOST "cd $DEPLOYMENT_LOCATION && docker compose pull && docker compose up -d"
+
+## Pipeline Scripts
+### Environment : development
+
+deploy-development:
+  stage: deploy
+  <<: *deploy-script
+  environment:
+    name: development
+  only:
+    - development
