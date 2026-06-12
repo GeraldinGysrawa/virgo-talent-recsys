@@ -24,8 +24,10 @@ variables:
 build-dev:
   extends: .build
   environment: development
+  tags:
+    - shell-development
   only:
-    - development
+    - develop
 
 ## Template script for Docker Compose Pull using SSH
   ### Uses private key, host, and username variables
@@ -51,7 +53,5 @@ deploy-development:
   <<: *deploy-script
   environment:
     name: development
-  tags:
-    - shell-development
   only:
-    - development
+    - develop
