@@ -38,9 +38,9 @@ build-dev:
     SSH_PRIVATE_KEY_PATH: "~/.ssh/id_ed25519_secops"
     DEPLOYMENT_LOCATION: "/app/$CI_ENVIRONMENT_NAME/$CLIENT/$CI_PROJECT_NAME"
   before_script:
-    - cat $ENV_FILE > .env
+    - cat $ENV_FILE > $CI_PROJECT_DIR/.env
   script:
-    - scp -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no .env $DEPLOYER_USER@$DEPLOYER_HOST:$DEPLOYMENT_LOCATION/.env
+    - scp -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no $CI_PROJECT_DIR/.env $DEPLOYER_USER@$DEPLOYER_HOST:$DEPLOYMENT_LOCATION/.env
     - ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no $DEPLOYER_USER@$DEPLOYER_HOST "mkdir -p $DEPLOYMENT_LOCATION" || true
     - scp -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ./compose.yml $DEPLOYER_USER@$DEPLOYER_HOST:$DEPLOYMENT_LOCATION/docker-compose.yml
     - ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no $DEPLOYER_USER@$DEPLOYER_HOST "cd $DEPLOYMENT_LOCATION && docker compose pull && docker compose up -d"
