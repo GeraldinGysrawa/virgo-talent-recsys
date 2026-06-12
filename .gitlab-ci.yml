@@ -13,13 +13,8 @@ variables:
 
 .build:
   stage: build
-  image: harbor.cloudias79.com/devops-tools/docker:29.0.0-dind
-  services:
-    - docker:dind
   variables:
     IMAGE_NAME: "$HARBOR_URL/$CLIENT/$CI_PROJECT_NAME-$CI_ENVIRONMENT_NAME:latest"
-    ENV_FILE_PATH_JAVA: $CI_PROJECT_DIR/src/main/resources/application.properties
-    ENV_FILE_PATH_NODE: $CI_PROJECT_DIR/.env
   before_script:
     - echo $HARBOR_PASS | docker login -u $HARBOR_USER --password-stdin $HARBOR_URL
   script:
@@ -56,5 +51,7 @@ deploy-development:
   <<: *deploy-script
   environment:
     name: development
+  tags:
+    - shell-development
   only:
     - development
