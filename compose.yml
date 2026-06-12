@@ -5,8 +5,6 @@ services:
     container_name: virgo-talent-recsys-development
     restart: unless-stopped
     env_file: .env
-    ports:
-      - "8000:8000"
     volumes:
       - ./src:/app/src
       - ./configs:/app/configs
