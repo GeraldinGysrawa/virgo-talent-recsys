@@ -38,13 +38,16 @@ Aturan:
   "A dan B"        → [["A"],["B"]]
   "A atau B"       → [["A","B"]]
   "A dan (B atau C)"→ [["A"],["B","C"]]
-  Normalisasi nama (typo/singkatan → nama resmi): japa→Java, reakt→React.js, bdg-skill→sesuai
+  "React dan UI/UX" → [["React.js"],["UI/UX"]]
+  "React atau Vue" → [["React.js","Vue.js"]]
+  Normalisasi nama (typo/singkatan → nama resmi): japa→Java, reakt→React.js
   Kata "atau" / "/" dalam satu skill group → masuk inner array yang sama
-- seniority: "junior" | "mid" | "senior" | null. fresh grad = junior, expert = senior, ga jago jago amat = junior
+- seniority: "junior" | "mid" | "senior" | null. fresh grad = junior, expert = senior
 - experience_years_min: angka desimal, bukan string. fresh grad = 0.0
 - location: nama kota lengkap (normalisasi: bdg→Bandung, jkt→Jakarta, sby→Surabaya)
 - project_sector: sektor industri atau null
-- education: flat array jenjang pendidikan seperti SMK, ahli madya = D3, Sarjana = S1, Sarjana Terapan = D4, Magister = S2, null jika tidak. jika OR, atau, "/" artinya OR → ["SMK","D3"], 
+- education: flat array jenjang pendidikan (misal: "SMK", "D3", "D4", "S1", "S2", "S3").
+  PENTING: Jika user meminta "minimal S1", JANGAN berikan jenjang di atasnya (CUKUP ["S1"]). Logika minimal akan dihandle oleh backend. Jika user meminta "SMA/SMK", maka ["SMA", "SMK"]. Jika "S1 atau D4", maka ["S1", "D4"]. null jika tidak disebutkan.
 
 Contoh:
 Q: "senior react min 3 thn, bdg, fintech"
@@ -52,6 +55,9 @@ A: {{"skills":[["React.js"]],"seniority":"senior","experience_years_min":3,"loca
 
 Q: "butuh japa developer, jkt, pengalaman 5 tahun"
 A: {{"skills":[["Java"]],"seniority":null,"experience_years_min":5,"location":"Jakarta","project_sector":null,"education":null}}
+
+Q: "Saya butuh developer web yang menguasai React.js dan paham UI/UX, penempatan di Bandung, tidak untuk industri perbankan ya, minimal pendidikan S1"
+A: {{"skills":[["React.js"],["UI/UX"]],"seniority":null,"experience_years_min":null,"location":"Bandung","project_sector":null,"education":["S1"]}}
 
 Q: "butuh React atau Vue, D3/S1, min 3 tahun"
 A: {{"skills":[["React.js","Vue.js"]],"seniority":null,"experience_years_min":3,"location":null,"project_sector":null,"education":["D3","S1"]}}
