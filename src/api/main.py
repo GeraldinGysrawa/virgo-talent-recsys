@@ -1,67 +1,26 @@
-"""
-main.py — FastAPI application entrypoint
+# =============================================================
+# src/api/main.py
+# =============================================================
 
-Virgo Rekomendasi Talenta API
-Increment 1: Modul NER aktif
-"""
+import os
+import time
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from loguru import logger
+from neo4j import GraphDatabase
 
-from src.api.routes import ner as ner_router
+from src.api.routes.etl import router as etl_router
+from src.api.routes import ner as ner_routes
+from src.api.routes.similarity import router as similarity_router
 from src.core.ollama_client import OllamaClient
-
-app = FastAPI(
-    title="Virgo Talent Recommendation API",
-    description=(
-        "Sistem rekomendasi talenta multi-kriteria berbasis semantic similarity "
-        "pada knowledge graph PT Padepokan Tujuh Sembilan."
-    ),
-    version="1.0.0-increment1",
-)
-
-app.include_router(ner_router.router)
-
-# Instance client yang di-share antar request
-# Dibuat sekali saat startup, ditutup saat shutdown
-_ollama_client: OllamaClient | None = None
-
-
-@app.on_event("startup")
-async def on_startup() -> None:
-    """
-    Inisialisasi aplikasi saat startup:
-    1. Buat persistent OllamaClient
-    2. Warmup Ollama — load model ke VRAM sebelum request pertama user masuk
-       sehingga cold start tidak dirasakan oleh user
-    """
-    global _ollama_client
-
-    logger.info("Virgo API starting — Increment 1: NER")
-
-    _ollama_client = OllamaClient()
-
-    # Inject ke NERExtractor di router supaya pakai client yang sama
-    ner_router._extractor.client = _ollama_client
-
-    await _warmup_ollama(_ollama_client)
-
-
-@app.on_event("shutdown")
-async def on_shutdown() -> None:
-    """Tutup HTTP client saat aplikasi berhenti."""
-    if _ollama_client:
-        await _ollama_client.close()
-        logger.info("OllamaClient ditutup")
+from src.modules.semantic_similarity.similarity_service import SemanticSimilarityService
 
 
 async def _warmup_ollama(client: OllamaClient) -> None:
     """
-    Kirim request dummy ke Ollama saat startup.
-
-    Tujuan: memaksa Ollama me-load model Qwen3:8b ke VRAM
-    sebelum request pertama user masuk.
-    Tanpa ini, user pertama akan merasakan cold start ~2-3 detik lebih lambat.
+    Memaksa Ollama me-load model ke VRAM sebelum request pertama.
+    Gagal warmup tidak menghentikan aplikasi.
     """
     logger.info("Warming up Ollama model...")
     try:
@@ -71,21 +30,94 @@ async def _warmup_ollama(client: OllamaClient) -> None:
         )
         logger.info("Ollama warm — model siap di VRAM")
     except Exception as exc:
-        # Warmup gagal tidak menghentikan aplikasi —
-        # hanya berarti request pertama user akan lebih lambat
         logger.warning(f"Warmup Ollama gagal (aplikasi tetap jalan): {exc}")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Dijalankan sekali saat startup dan sekali saat shutdown.
+    Menginisialisasi Neo4j, similarity service, dan Ollama untuk NER.
+    """
+    # ── Startup ──────────────────────────────────────────────
+    logger.info("Virgo API: startup ...")
+
+    neo4j_driver = GraphDatabase.driver(
+        os.environ["NEO4J_URI"],
+        auth=(os.environ["NEO4J_USER"], os.environ["NEO4J_PASSWORD"]),
+    )
+    app.state.neo4j_driver = neo4j_driver
+
+    max_retries = 30
+    retry_delay = 2
+
+    for attempt in range(max_retries):
+        try:
+            similarity_service = SemanticSimilarityService(
+                driver=neo4j_driver,
+                database=os.getenv("NEO4J_DATABASE", "neo4j"),
+            )
+            similarity_service.initialize()
+            app.state.similarity_service = similarity_service
+            break
+        except Exception as exc:
+            if attempt < max_retries - 1:
+                logger.warning(
+                    f"Neo4j belum siap (attempt {attempt + 1}/{max_retries}), "
+                    f"retry dalam {retry_delay}s: {exc}"
+                )
+                time.sleep(retry_delay)
+            else:
+                logger.error(
+                    f"Neo4j tidak siap setelah {max_retries} attempts. "
+                    f"Startup gagal: {exc}"
+                )
+                raise
+
+    ollama_client = OllamaClient()
+    app.state.ollama_client = ollama_client
+    ner_routes._extractor.client = ollama_client
+    await _warmup_ollama(ollama_client)
+
+    logger.info("Virgo API: siap menerima request.")
+    yield
+
+    # ── Shutdown ─────────────────────────────────────────────
+    logger.info("Virgo API: shutdown ...")
+    oc = getattr(app.state, "ollama_client", None)
+    if oc is not None:
+        await oc.close()
+        logger.info("OllamaClient ditutup")
+    neo4j_driver.close()
+
+
+app = FastAPI(
+    title="Virgo Talent Recommendation System API",
+    description=(
+        "API untuk sistem rekomendasi talenta multi-kriteria: "
+        "NER (Qwen/Ollama), ETL ontology, dan semantic similarity pada Neo4j."
+    ),
+    version="0.3.0",
+    lifespan=lifespan,
+)
+
+app.include_router(etl_router)
+app.include_router(similarity_router)
+app.include_router(ner_routes.router)
 
 
 @app.get("/", tags=["Info"])
 def root():
     return {
         "project": "Virgo Talent Recommendation System",
-        "increment": 1,
-        "modules": ["NER"],
+        "status": "Development",
+        "current_increment": 3,
+        "modules": ["NER", "ETL", "Semantic Similarity"],
+        "team": ["Geraldin", "Ikhsan", "Harish"],
         "docs": "/docs",
     }
 
 
-@app.get("/health", tags=["Info"])
-def health():
+@app.get("/health")
+def health_check():
     return {"status": "healthy"}
