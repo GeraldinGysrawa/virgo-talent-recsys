@@ -54,9 +54,12 @@ class ExtractionResult(BaseModel):
         description="Kota penempatan (nama lengkap). Contoh: 'Bandung'.",
     )
 
-    project_sector: str | None = Field(
-        default=None,
-        description="Sektor industri proyek. Contoh: 'perbankan', 'fintech'.",
+    is_banking_project: bool = Field(
+        default=False,
+        description=(
+            "True jika proyek terkait sektor perbankan/bank/fintech. "
+            "False jika tidak disebutkan atau sektor lain."
+        ),
     )
     education: list[str] | None = Field(
         default=None,

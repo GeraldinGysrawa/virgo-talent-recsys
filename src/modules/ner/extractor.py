@@ -30,8 +30,8 @@ _SYSTEM_PROMPT_TEMPLATE = """\
 Ekstrak entitas dari kalimat kebutuhan talenta IT ke JSON.
 Tanggal hari ini: {today}.
 
-Output JSON wajib berisi field berikut (null jika tidak disebutkan):
-skills, seniority, experience_years_min, location, project_sector, education
+Output JSON wajib berisi field berikut (null/false jika tidak disebutkan):
+skills, seniority, experience_years_min, location, is_banking_project, education
 
 Aturan:
 - skills: nested array (CNF). Outer=AND, Inner=OR.
@@ -45,34 +45,34 @@ Aturan:
 - seniority: "junior" | "mid" | "senior" | null. fresh grad = junior, expert = senior
 - experience_years_min: angka desimal, bukan string. fresh grad = 0.0
 - location: nama kota lengkap (normalisasi: bdg→Bandung, jkt→Jakarta, sby→Surabaya)
-- project_sector: sektor industri atau null
+- is_banking_project: boolean. True jika proyek terkait sektor perbankan, bank, fintech. False jika tidak disebutkan atau sektor lain (e-commerce, telco, dsb).
 - education: flat array jenjang pendidikan (misal: "SMK", "D3", "D4", "S1", "S2", "S3").
   PENTING: Jika user meminta "minimal S1", JANGAN berikan jenjang di atasnya (CUKUP ["S1"]). Logika minimal akan dihandle oleh backend. Jika user meminta "SMA/SMK", maka ["SMA", "SMK"]. Jika "S1 atau D4", maka ["S1", "D4"]. null jika tidak disebutkan.
 
 Contoh:
 Q: "senior react min 3 thn, bdg, fintech"
-A: {{"skills":[["React.js"]],"seniority":"senior","experience_years_min":3,"location":"Bandung","project_sector":"fintech","education":null}}
+A: {{"skills":[["React.js"]],"seniority":"senior","experience_years_min":3,"location":"Bandung","is_banking_project":true,"education":null}}
 
 Q: "butuh japa developer, jkt, pengalaman 5 tahun"
-A: {{"skills":[["Java"]],"seniority":null,"experience_years_min":5,"location":"Jakarta","project_sector":null,"education":null}}
+A: {{"skills":[["Java"]],"seniority":null,"experience_years_min":5,"location":"Jakarta","is_banking_project":false,"education":null}}
 
 Q: "Saya butuh developer web yang menguasai React.js dan paham UI/UX, penempatan di Bandung, tidak untuk industri perbankan ya, minimal pendidikan S1"
-A: {{"skills":[["React.js"],["UI/UX"]],"seniority":null,"experience_years_min":null,"location":"Bandung","project_sector":null,"education":["S1"]}}
+A: {{"skills":[["React.js"],["UI/UX"]],"seniority":null,"experience_years_min":null,"location":"Bandung","is_banking_project":false,"education":["S1"]}}
 
 Q: "butuh React atau Vue, D3/S1, min 3 tahun"
-A: {{"skills":[["React.js","Vue.js"]],"seniority":null,"experience_years_min":3,"location":null,"project_sector":null,"education":["D3","S1"]}}
+A: {{"skills":[["React.js","Vue.js"]],"seniority":null,"experience_years_min":3,"location":null,"is_banking_project":false,"education":["D3","S1"]}}
 
 Q: "Python dan (Postgres atau MySQL), S1, senior"
-A: {{"skills":[["Python"],["PostgreSQL","MySQL"]],"seniority":"senior","experience_years_min":null,"location":null,"project_sector":null,"education":["S1"]}}
+A: {{"skills":[["Python"],["PostgreSQL","MySQL"]],"seniority":"senior","experience_years_min":null,"location":null,"is_banking_project":false,"education":["S1"]}}
 
 Q: "1 BE mid golang, 1 FE mid reakt"
-A: {{"skills":[["Golang"],["React.js"]],"seniority":"mid","experience_years_min":null,"location":null,"project_sector":null,"education":null}}
+A: {{"skills":[["Golang"],["React.js"]],"seniority":"mid","experience_years_min":null,"location":null,"is_banking_project":false,"education":null}}
 
 Q: "fresh grad python, perbankan"
-A: {{"skills":[["Python"]],"seniority":"junior","experience_years_min":0.0,"location":null,"project_sector":"perbankan","education":null}}
+A: {{"skills":[["Python"]],"seniority":"junior","experience_years_min":0.0,"location":null,"is_banking_project":true,"education":null}}
 
 Q: "ada talent available?"
-A: {{"skills":[],"seniority":null,"experience_years_min":null,"location":null,"project_sector":null,"education":null}}
+A: {{"skills":[],"seniority":null,"experience_years_min":null,"location":null,"is_banking_project":false,"education":null}}
 
 Kembalikan HANYA objek JSON, tanpa teks lain.\
 """
@@ -146,7 +146,7 @@ class NERExtractor:
             seniority=data.get("seniority"),
             experience_years_min=experience,
             location=data.get("location"),
-            project_sector=data.get("project_sector"),
+            is_banking_project=bool(data.get("is_banking_project", False)),
             education=education,
         )
 
