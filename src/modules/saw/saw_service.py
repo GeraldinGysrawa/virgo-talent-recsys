@@ -112,7 +112,7 @@ class SAWService:
                 ranked_candidates=[],
                 candidates_data=[],
                 location_query=request.location,
-                project_sector=request.project_sector,
+                is_banking_project=request.is_banking_project,
             )
 
         # ── 6. Tentukan kriteria aktif ────────────────────────
@@ -141,7 +141,7 @@ class SAWService:
             ranked_candidates=ranked,
             candidates_data=candidates,
             location_query=request.location,
-            project_sector=request.project_sector,
+            is_banking_project=request.is_banking_project,
         )
 
         logger.info(

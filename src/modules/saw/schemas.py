@@ -88,9 +88,9 @@ class SAWRankRequest(BaseModel):
         default=None,
         description="Lokasi penempatan dari NER (mis. 'Bandung')",
     )
-    project_sector: str | None = Field(
-        default=None,
-        description="Sektor proyek dari NER (mis. 'perbankan')",
+    is_banking_project: bool = Field(
+        default=False,
+        description="True jika proyek terkait perbankan/fintech (dari NER)",
     )
     education: list[str] | None = Field(
         default=None,

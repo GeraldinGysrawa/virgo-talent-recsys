@@ -45,7 +45,7 @@ async def rank_talents(body: SAWRankRequest, request: Request) -> Recommendation
 
     logger.info(
         f"POST /saw/rank — {len(body.talent_scores)} talenta, "
-        f"location={body.location}, sector={body.project_sector}, "
+        f"location={body.location}, banking={body.is_banking_project}, "
         f"education={body.education}"
     )
 

@@ -52,7 +52,7 @@ class RankResultFormatter:
         ranked_candidates: list[RankedCandidate],
         candidates_data: list[SAWCandidate],
         location_query: str | None = None,
-        project_sector: str | None = None,
+        is_banking_project: bool = False,
     ) -> RecommendationResult:
         """
         Memformat hasil ranking menjadi RecommendationResult.
@@ -65,8 +65,8 @@ class RankResultFormatter:
             Data lengkap kandidat (untuk cek constraint).
         location_query : str | None
             Lokasi dari kueri NER.
-        project_sector : str | None
-            Sektor proyek dari kueri NER.
+        is_banking_project : bool
+            True jika proyek terkait perbankan/fintech.
 
         Returns
         -------
@@ -95,7 +95,7 @@ class RankResultFormatter:
             constraints = RankResultFormatter._build_constraints(
                 candidate_data,
                 location_query,
-                project_sector,
+                is_banking_project,
             )
 
             recommendations.append(
@@ -133,7 +133,7 @@ class RankResultFormatter:
     def _build_constraints(
         candidate: SAWCandidate | None,
         location_query: str | None,
-        project_sector: str | None,
+        is_banking_project: bool,
     ) -> list[str]:
         """
         Membangun daftar label constraint untuk satu talenta.
@@ -152,9 +152,8 @@ class RankResultFormatter:
         constraints: list[str] = []
 
         # Cek concern perbankan
-        if project_sector and RankResultFormatter._is_banking_sector(project_sector):
-            if candidate.concern_perbankan:
-                constraints.append("Concern: tidak bersedia untuk proyek perbankan")
+        if is_banking_project and candidate.concern_perbankan:
+            constraints.append("Concern: tidak bersedia untuk proyek perbankan")
 
         # Cek kesesuaian lokasi
         if location_query and candidate.lokasi_penempatan:
@@ -167,12 +166,6 @@ class RankResultFormatter:
                 )
 
         return constraints
-
-    @staticmethod
-    def _is_banking_sector(sector: str) -> bool:
-        """Cek apakah sektor proyek terkait perbankan."""
-        banking_keywords = {"perbankan", "banking", "bank", "fintech"}
-        return sector.lower().strip() in banking_keywords
 
     @staticmethod
     def _location_matches(
