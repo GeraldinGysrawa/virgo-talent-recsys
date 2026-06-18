@@ -5,8 +5,8 @@
 # Tanggung Jawab:
 #   Orchestrator utama modul SAW (GRASP Controller).
 #   Mengkoordinasi seluruh langkah perankingan multi-kriteria:
-#   1. Query profil talenta dari Neo4j
-#   2. Merge skill_score dari input n8n dengan profil Neo4j
+#   1. Ambil profil talenta via TalentRepository
+#   2. Merge skill_score dari input dengan profil
 #   3. Filter hard exclusion (irreplaceable)
 #   4. Tentukan kriteria aktif (n=3 atau n=4)
 #   5. Hitung bobot ROC
@@ -14,15 +14,15 @@
 #   7. Format hasil dengan label constraint
 #
 # Catatan:
-#   - SAWService bersifat read-only terhadap Neo4j
-#   - Stateless — diinstansiasi per request di router
-#   - Mengikuti pola dependency injection (driver via constructor)
+#   - SAWService tidak mengetahui detail Neo4j sama sekali;
+#     akses data sepenuhnya didelegasikan ke TalentRepository.
+#   - Stateless — diinstansiasi per request oleh caller
+#     (router sementara; akan digantikan RecommendationRouter).
 # =============================================================
 
 from __future__ import annotations
 
 from loguru import logger
-from neo4j import Driver
 
 from src.modules.saw.schemas import (
     SAWRankRequest,
@@ -31,6 +31,7 @@ from src.modules.saw.schemas import (
     RecommendationResult,
     _EXCLUDED_STATUS,
 )
+from src.modules.saw.talent_repository import TalentRepository
 from src.modules.saw.roc_weight_calculator import ROCWeightCalculator
 from src.modules.saw.saw_ranker import SAWRanker
 from src.modules.saw.rank_result_formatter import RankResultFormatter
@@ -41,20 +42,18 @@ class SAWService:
     Orchestrator utama modul SAW (GRASP Controller).
 
     Menerima TalentScoreInput[] dari n8n (output /similarity/rank),
-    mengambil profil lengkap dari Neo4j, lalu menjalankan SAW
-    multi-kriteria dengan bobot ROC.
+    mengambil profil lengkap via TalentRepository, lalu menjalankan
+    SAW multi-kriteria dengan bobot ROC.
 
     Parameters
     ----------
-    driver : neo4j.Driver
-        Neo4j driver instance (dari app.state).
-    database : str
-        Nama database Neo4j (default: "neo4j").
+    repository : TalentRepository
+        Repository akses data talenta dari Neo4j.
+        Seluruh urusan database berhenti di sini.
     """
 
-    def __init__(self, driver: Driver, database: str = "neo4j") -> None:
-        self._driver = driver
-        self._database = database
+    def __init__(self, repository: TalentRepository) -> None:
+        self._repository = repository
 
     def rank(self, request: SAWRankRequest) -> RecommendationResult:
         """
@@ -76,10 +75,10 @@ class SAWService:
             f"SAWService: menerima {len(nip_list)} talenta untuk diranking."
         )
 
-        # ── 2. Query profil talenta dari Neo4j ────────────────
-        profiles = self._get_talent_profiles(nip_list)
+        # ── 2. Ambil profil talenta via repository ────────────
+        profiles = self._repository.get_by_nips(nip_list)
         logger.info(
-            f"SAWService: {len(profiles)} profil ditemukan di Neo4j "
+            f"SAWService: {len(profiles)} profil ditemukan "
             f"dari {len(nip_list)} NIP yang diminta."
         )
 
@@ -150,87 +149,6 @@ class SAWService:
             f"menampilkan top {len(result.top_talents)}."
         )
         return result
-
-    # ----------------------------------------------------------
-    # Private — Query profil talenta dari Neo4j
-    # ----------------------------------------------------------
-
-    def _get_talent_profiles(self, nip_list: list[str]) -> list[TalentProfile]:
-        """
-        Mengambil profil talenta dari Neo4j berdasarkan daftar NIP.
-
-        Query mengembalikan data ketersediaan, pendidikan, pengalaman,
-        lokasi penempatan, dan concern perbankan untuk setiap talenta.
-
-        Parameters
-        ----------
-        nip_list : list[str]
-            Daftar NIP yang akan di-query.
-
-        Returns
-        -------
-        list[TalentProfile]
-            Profil talenta dari Neo4j. Talenta yang tidak ditemukan
-            akan di-skip dengan warning log.
-        """
-        query = """
-        MATCH (t:Talent)
-        WHERE t.nip IN $nip_list
-        OPTIONAL MATCH (t)-[:PREFERS_PLACEMENT]->(p:Placement)
-        RETURN t.nip AS nip,
-               t.namaLengkap AS nama_lengkap,
-               t.statusPenugasan AS ketersediaan,
-               t.pendidikan AS pendidikan,
-               t.pengalamanTahun AS pengalaman_tahun,
-               t.concernPerbankan AS concern_perbankan,
-               collect(p.namaLokasi) AS lokasi_penempatan
-        """
-
-        profiles: list[TalentProfile] = []
-
-        with self._driver.session(
-            database=self._database,
-        ) as session:
-            result = session.run(query, nip_list=nip_list)
-
-            for record in result:
-                nip = record["nip"]
-                if nip is None:
-                    continue
-
-                # Tangani nilai null dari Neo4j
-                pengalaman_raw = record["pengalaman_tahun"]
-                pengalaman = float(pengalaman_raw) if pengalaman_raw is not None else 0.0
-
-                concern_raw = record["concern_perbankan"]
-                concern = bool(concern_raw) if concern_raw is not None else False
-
-                ketersediaan_raw = record["ketersediaan"]
-                ketersediaan = str(ketersediaan_raw).strip().lower() if ketersediaan_raw else "idle"
-
-                lokasi_raw = record["lokasi_penempatan"]
-                lokasi = [loc for loc in lokasi_raw if loc is not None] if lokasi_raw else []
-
-                profiles.append(
-                    TalentProfile(
-                        nip=nip,
-                        nama_lengkap=record["nama_lengkap"] or nip,
-                        ketersediaan=ketersediaan,
-                        pendidikan=record["pendidikan"],
-                        pengalaman_tahun=pengalaman,
-                        lokasi_penempatan=lokasi,
-                        concern_perbankan=concern,
-                    )
-                )
-
-        not_found = set(nip_list) - {p.nip for p in profiles}
-        if not_found:
-            logger.warning(
-                f"SAWService: {len(not_found)} NIP tidak ditemukan di Neo4j: "
-                f"{sorted(not_found)[:5]}{'...' if len(not_found) > 5 else ''}"
-            )
-
-        return profiles
 
     # ----------------------------------------------------------
     # Private — Merge skill_score + profil
