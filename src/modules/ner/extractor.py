@@ -39,14 +39,14 @@ Aturan:
 - location: nama kota lengkap (normalisasi: bdg→Bandung, jkt→Jakarta, sby→Surabaya)
 - is_banking_project: boolean. True jika proyek terkait sektor perbankan, bank, fintech. False jika tidak disebutkan atau sektor lain (e-commerce, telco, dsb).
 - education: flat array jenjang pendidikan (misal: "SMA/SMK", "D3", "D4", "S1", "S2", "S3").
-  PENTING: Jika user meminta "minimal S1", JANGAN berikan jenjang di atasnya (CUKUP ["S1"]). Logika minimal akan dihandle oleh backend. Jika user meminta "SMA/SMK", maka ["SMA/SMK"]. Namun, jika user meminta "S1 atau D4", maka ["S1", "D4"], SMK/D3 maka ["SMA/SMK", "D3"]. null jika tidak disebutkan.
+  **PENTING**: Jika user meminta "minimal S1", JANGAN berikan jenjang di atasnya atau di bawahnya (CUKUP ["S1"]). Logika minimal akan dihandle oleh backend. Jika user meminta "SMA/SMK", maka ["SMA/SMK"]. Namun, jika user meminta "S1 atau D4", maka ["S1", "D4"], SMK/D3 maka ["SMA/SMK", "D3"]. null jika tidak disebutkan.
 
 Contoh:
-Q: "senior react min 3 thn, bdg, fintech"
-A: {{"skills":[["React.js"]],"seniority":"senior","experience_years_min":3,"location":"Bandung","is_banking_project":true,"education":null}}
+Q: "senior react min 3 thn, bdg, fintech, minimal S1"
+A: {{"skills":[["React.js"]],"seniority":"senior","experience_years_min":3,"location":"Bandung","is_banking_project":true,"education":["S1"]}}
 
-Q: "butuh japa developer, jkt, pengalaman 5 tahun"
-A: {{"skills":[["Java"]],"seniority":null,"experience_years_min":5,"location":"Jakarta","is_banking_project":false,"education":null}}
+Q: "butuh japa developer, jkt, pengalaman 5 tahun, Pendidikan SMK"
+A: {{"skills":[["Java"]],"seniority":null,"experience_years_min":5,"location":"Jakarta","is_banking_project":false,"education":["SMA/SMK"]}}
 
 Q: "Saya butuh developer web yang menguasai React.js dan paham UI/UX, penempatan di Bandung, tidak untuk industri perbankan ya, minimal pendidikan S1"
 A: {{"skills":[["React.js"],["UI/UX"]],"seniority":null,"experience_years_min":null,"location":"Bandung","is_banking_project":false,"education":["S1"]}}
@@ -57,14 +57,14 @@ A: {{"skills":[["React.js","Vue.js"]],"seniority":null,"experience_years_min":3,
 Q: "Python dan (Postgres atau MySQL), S1, senior"
 A: {{"skills":[["Python"],["PostgreSQL","MySQL"]],"seniority":"senior","experience_years_min":null,"location":null,"is_banking_project":false,"education":["S1"]}}
 
-Q: "1 BE mid golang, 1 FE mid reakt"
-A: {{"skills":[["Golang"],["React.js"]],"seniority":"mid","experience_years_min":null,"location":null,"is_banking_project":false,"education":null}}
-
 Q: "fresh grad python, perbankan"
 A: {{"skills":[["Python"]],"seniority":"junior","experience_years_min":0.0,"location":null,"is_banking_project":true,"education":null}}
 
 Q: "ada talent available?"
 A: {{"skills":[],"seniority":null,"experience_years_min":null,"location":null,"is_banking_project":false,"education":null}}
+
+Q: "Butuh devops sekalian yang jago AWS, lulusan kuliah minimal, project bank nih cuy, jakarta"
+A: {{"skills":[["DevOps"],["AWS"]],"seniority":"senior","experience_years_min":null,"location":"Jakarta","is_banking_project":true,"education":["D3","S1"]}}
 
 Kembalikan HANYA objek JSON, tanpa teks lain.\
 """
