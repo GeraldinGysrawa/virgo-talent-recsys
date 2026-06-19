@@ -12,15 +12,8 @@ Alur:
 from __future__ import annotations
 
 import json
-from datetime import date, datetime
 
 from loguru import logger
-
-try:
-    from zoneinfo import ZoneInfo
-    _TZ = ZoneInfo("Asia/Jakarta")
-except Exception:
-    _TZ = None
 
 from src.core.ollama_client import OllamaClient
 from src.modules.ner.schemas import ExtractionResult
@@ -28,7 +21,6 @@ from src.modules.ner.schemas import ExtractionResult
 
 _SYSTEM_PROMPT_TEMPLATE = """\
 Ekstrak entitas dari kalimat kebutuhan talenta IT ke JSON.
-Tanggal hari ini: {today}.
 
 Output JSON wajib berisi field berikut (null/false jika tidak disebutkan):
 skills, seniority, experience_years_min, location, is_banking_project, education
@@ -46,8 +38,8 @@ Aturan:
 - experience_years_min: angka desimal, bukan string. fresh grad = 0.0
 - location: nama kota lengkap (normalisasi: bdg→Bandung, jkt→Jakarta, sby→Surabaya)
 - is_banking_project: boolean. True jika proyek terkait sektor perbankan, bank, fintech. False jika tidak disebutkan atau sektor lain (e-commerce, telco, dsb).
-- education: flat array jenjang pendidikan (misal: "SMK", "D3", "D4", "S1", "S2", "S3").
-  PENTING: Jika user meminta "minimal S1", JANGAN berikan jenjang di atasnya (CUKUP ["S1"]). Logika minimal akan dihandle oleh backend. Jika user meminta "SMA/SMK", maka ["SMA", "SMK"]. Jika "S1 atau D4", maka ["S1", "D4"]. null jika tidak disebutkan.
+- education: flat array jenjang pendidikan (misal: "SMA/SMK", "D3", "D4", "S1", "S2", "S3").
+  PENTING: Jika user meminta "minimal S1", JANGAN berikan jenjang di atasnya (CUKUP ["S1"]). Logika minimal akan dihandle oleh backend. Jika user meminta "SMA/SMK", maka ["SMA/SMK"]. Namun, jika user meminta "S1 atau D4", maka ["S1", "D4"], SMK/D3 maka ["SMA/SMK", "D3"]. null jika tidak disebutkan.
 
 Contoh:
 Q: "senior react min 3 thn, bdg, fintech"
@@ -105,8 +97,7 @@ class NERExtractor:
         """
         logger.info(f"Memulai ekstraksi | query='{query}'")
 
-        today = self._get_today()
-        system_prompt = self._build_prompt(today)
+        system_prompt = self._build_prompt()
 
         raw_json = await self.client.generate(system_prompt, query)
         result = self._parse_response(raw_json, query)
@@ -118,9 +109,9 @@ class NERExtractor:
         )
         return result
 
-    def _build_prompt(self, today: date) -> str:
-        """Inject tanggal hari ini ke dalam system prompt."""
-        return _SYSTEM_PROMPT_TEMPLATE.format(today=today.strftime("%d/%m/%Y"))
+    def _build_prompt(self) -> str:
+        """Build system prompt untuk ekstraksi entitas."""
+        return _SYSTEM_PROMPT_TEMPLATE
 
     def _parse_response(self, raw_json: str, query: str) -> ExtractionResult:
         """
@@ -191,12 +182,3 @@ class NERExtractor:
             cleaned = "\n".join(lines[1:-1]).strip()
         return cleaned
 
-    @staticmethod
-    def _get_today() -> date:
-        """Kembalikan tanggal hari ini dalam timezone WIB."""
-        if _TZ is not None:
-            try:
-                return datetime.now(_TZ).date()
-            except Exception:
-                pass
-        return date.today()
