@@ -118,6 +118,7 @@ def _build_saw_request(
             nip=s.nip,
             nama_lengkap=s.nama_lengkap,
             skill_score=s.skill_score,
+            skills=s.talent_skills,
         )
         for s in scores
     ]
@@ -210,6 +211,7 @@ async def recommend(
                 "(atau skill tidak terdaftar di sistem)."
             ),
             top_talents=[],
+            other_talents=[],
             has_more=False,
             total_candidates=0,
         )
