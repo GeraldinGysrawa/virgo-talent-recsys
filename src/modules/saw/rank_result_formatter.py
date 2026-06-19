@@ -28,6 +28,7 @@ from src.modules.saw.schemas import (
 
 # Jumlah maksimal talenta pada tampilan utama
 _TOP_N: int = 5
+_OTHER_N: int = 50
 
 # Pesan ketika tidak ada kandidat yang memenuhi syarat
 _EMPTY_MESSAGE: str = (
@@ -81,6 +82,7 @@ class RankResultFormatter:
             return RecommendationResult(
                 message=_EMPTY_MESSAGE,
                 top_talents=[],
+                other_talents=[],
                 has_more=False,
                 total_candidates=0,
             )
@@ -102,6 +104,12 @@ class RankResultFormatter:
                 TalentRecommendation(
                     nip=ranked.nip,
                     nama_lengkap=ranked.nama_lengkap,
+                    ketersediaan=candidate_data.ketersediaan if candidate_data else "Unknown",
+                    pendidikan=candidate_data.pendidikan if candidate_data else None,
+                    pengalaman_tahun=candidate_data.pengalaman_tahun if candidate_data else 0.0,
+                    skills=candidate_data.skills if candidate_data else [],
+                    lokasi_penempatan=candidate_data.lokasi_penempatan if candidate_data else [],
+                    concern_perbankan=candidate_data.concern_perbankan if candidate_data else False,
                     final_score=ranked.final_score,
                     score_breakdown=ranked.score_per_criteria,
                     constraints=constraints,
@@ -110,17 +118,19 @@ class RankResultFormatter:
 
         total = len(recommendations)
         top_talents = recommendations[:_TOP_N]
-        has_more = total > _TOP_N
+        other_talents = recommendations[_TOP_N : _TOP_N + _OTHER_N]
+        has_more = total > (_TOP_N + _OTHER_N)
 
         logger.info(
             f"RankResultFormatter: {total} kandidat total, "
-            f"menampilkan top {len(top_talents)}, "
+            f"top={len(top_talents)}, other={len(other_talents)}, "
             f"has_more={has_more}."
         )
 
         return RecommendationResult(
             message=None,
             top_talents=top_talents,
+            other_talents=other_talents,
             has_more=has_more,
             total_candidates=total,
         )

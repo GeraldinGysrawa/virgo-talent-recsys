@@ -70,6 +70,10 @@ class TalentScoreInput(BaseModel):
         le=1.0,
         description="Skor kemiripan skill dari Sánchez Similarity (0.0–1.0)",
     )
+    skills: list[str] = Field(
+        default_factory=list,
+        description="Daftar keahlian yang cocok dari semantic similarity",
+    )
 
 
 class SAWRankRequest(BaseModel):
@@ -128,6 +132,7 @@ class SAWCandidate:
     nip: str
     nama_lengkap: str
     skill_score: float
+    skills: list[str]
     ketersediaan: str
     pendidikan: str | None
     pengalaman_tahun: float
@@ -158,6 +163,12 @@ class TalentRecommendation(BaseModel):
 
     nip: str
     nama_lengkap: str
+    ketersediaan: str = Field(..., description="Status penugasan")
+    pendidikan: str | None = Field(default=None, description="Jenjang pendidikan")
+    pengalaman_tahun: float = Field(..., description="Pengalaman dalam tahun")
+    skills: list[str] = Field(default_factory=list, description="Keahlian yang relevan")
+    lokasi_penempatan: list[str] = Field(default_factory=list, description="Daftar lokasi penempatan yang bersedia")
+    concern_perbankan: bool = Field(default=False, description="True jika memiliki keberatan pada proyek perbankan")
     final_score: float = Field(..., description="Skor akhir SAW (0.0–1.0)")
     score_breakdown: dict[str, float] = Field(
         default_factory=dict,
@@ -181,11 +192,15 @@ class RecommendationResult(BaseModel):
     )
     top_talents: list[TalentRecommendation] = Field(
         default_factory=list,
-        description="Maksimal 5 talenta teratas",
+        description="5 talenta teratas (ranking 1-5)",
+    )
+    other_talents: list[TalentRecommendation] = Field(
+        default_factory=list,
+        description="Maksimal 50 talenta berikutnya (ranking 6-55)",
     )
     has_more: bool = Field(
         default=False,
-        description="True jika masih ada kandidat di luar top 5",
+        description="True jika total_candidates melebihi 55 (masih ada sisa)",
     )
     total_candidates: int = Field(
         default=0,

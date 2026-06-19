@@ -83,10 +83,10 @@ class SAWService:
         )
 
         # ── 3. Merge skill_score + profil → SAWCandidate ──────
-        skill_score_map: dict[str, float] = {
-            ts.nip: ts.skill_score for ts in request.talent_scores
+        skill_data_map: dict[str, TalentScoreInput] = {
+            ts.nip: ts for ts in request.talent_scores
         }
-        candidates = self._merge_candidates(profiles, skill_score_map)
+        candidates = self._merge_candidates(profiles, skill_data_map)
 
         # ── 4. Filter hard exclusion (irreplaceable) ──────────
         before_filter = len(candidates)
@@ -157,7 +157,7 @@ class SAWService:
     @staticmethod
     def _merge_candidates(
         profiles: list[TalentProfile],
-        skill_score_map: dict[str, float],
+        skill_data_map: dict[str, TalentScoreInput],
     ) -> list[SAWCandidate]:
         """
         Menggabungkan profil Neo4j dengan skill_score dari input n8n.
@@ -166,8 +166,8 @@ class SAWService:
         ----------
         profiles : list[TalentProfile]
             Profil talenta dari Neo4j.
-        skill_score_map : dict[str, float]
-            Mapping NIP → skill_score dari TalentScoreInput.
+        skill_data_map : dict[str, TalentScoreInput]
+            Mapping NIP → objek TalentScoreInput (berisi skor & skills).
 
         Returns
         -------
@@ -177,13 +177,16 @@ class SAWService:
         candidates: list[SAWCandidate] = []
 
         for profile in profiles:
-            skill_score = skill_score_map.get(profile.nip, 0.0)
+            skill_data = skill_data_map.get(profile.nip)
+            skill_score = skill_data.skill_score if skill_data else 0.0
+            skills = skill_data.skills if skill_data else []
 
             candidates.append(
                 SAWCandidate(
                     nip=profile.nip,
                     nama_lengkap=profile.nama_lengkap,
                     skill_score=skill_score,
+                    skills=skills,
                     ketersediaan=profile.ketersediaan,
                     pendidikan=profile.pendidikan,
                     pengalaman_tahun=profile.pengalaman_tahun,
