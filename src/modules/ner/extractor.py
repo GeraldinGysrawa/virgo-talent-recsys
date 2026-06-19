@@ -63,8 +63,8 @@ A: {{"skills":[["Python"]],"seniority":"junior","experience_years_min":0.0,"loca
 Q: "ada talent available?"
 A: {{"skills":[],"seniority":null,"experience_years_min":null,"location":null,"is_banking_project":false,"education":null}}
 
-Q: "Butuh devops sekalian yang jago AWS, lulusan kuliah minimal, project bank nih cuy, jakarta"
-A: {{"skills":[["DevOps"],["AWS"]],"seniority":"senior","experience_years_min":null,"location":"Jakarta","is_banking_project":true,"education":["D3","S1"]}}
+Q: "Butuh devops sekalian yang jago AWS, minimal lulusan D3, project bank nih cuy, jakarta"
+A: {{"skills":[["DevOps"],["AWS"]],"seniority":"senior","experience_years_min":null,"location":"Jakarta","is_banking_project":true,"education":["D3"]}}
 
 Kembalikan HANYA objek JSON, tanpa teks lain.\
 """
@@ -128,8 +128,8 @@ class NERExtractor:
             logger.error(f"Gagal parse JSON | error={exc} | raw={raw_json[:200]}")
             raise ValueError(f"Respons Ollama bukan JSON valid: {exc}") from exc
 
-        education    = self._parse_education(data.get("education"))
-        experience   = self._parse_experience(data.get("experience_years_min"))
+        education = self._parse_education(data.get("education"))
+        experience = self._parse_experience(data.get("experience_years_min"))
 
         return ExtractionResult(
             query=query,
@@ -168,10 +168,33 @@ class NERExtractor:
         if not isinstance(raw, list):
             logger.warning(f"Education bukan list: {raw!r}")
             return None
-        cleaned = [str(e).strip() for e in raw if e]
+
+        # Mapping normalisasi untuk mengatasi typo/variasi dari LLM
+        norm_map = {
+            "s1": "S1",
+            "s2": "S2",
+            "s3": "S3",
+            "s,": "S1",
+            "s": "S1",
+            "s.1": "S1",
+            "d1": "D1",
+            "d2": "D2",
+            "d3": "D3",
+            "d4": "D4",
+            "smk": "SMA/SMK",
+            "sma": "SMA/SMK",
+            "sma/smk": "SMA/SMK",
+        }
+
+        cleaned = []
+        for e in raw:
+            if not e:
+                continue
+            item = str(e).strip().lower()
+            norm_val = norm_map.get(item) or str(e).strip()
+            cleaned.append(norm_val)
+
         return cleaned if cleaned else None
-
-
 
     @staticmethod
     def _clean_json_string(text: str) -> str:
@@ -181,4 +204,3 @@ class NERExtractor:
             lines = cleaned.splitlines()
             cleaned = "\n".join(lines[1:-1]).strip()
         return cleaned
-
