@@ -14,8 +14,12 @@ from src.api.routes.etl import router as etl_router
 from src.api.routes import ner
 from src.api.routes.similarity import router as similarity_router
 from src.api.routes.saw import router as saw_router
+from src.api.routes.recommendations import router as recommendations_router
 from src.core.ollama_client import OllamaClient
+from src.modules.ner.extractor import NERExtractor
 from src.modules.semantic_similarity.similarity_service import SemanticSimilarityService
+from src.modules.saw.talent_repository import TalentRepository
+from src.modules.saw.saw_service import SAWService
 
 
 async def _warmup_ollama(client: OllamaClient) -> None:
@@ -75,12 +79,34 @@ async def lifespan(app: FastAPI):
                 )
                 raise
 
+    # ── NER Extractor (singleton) ───────────────────────────────────
+    # OllamaClient dibuat terlebih dahulu karena di-share ke ner._extractor
+    # (ner.py) dan NERExtractor singleton baru (app.state.ner_extractor).
     ollama_client = OllamaClient()
     app.state.ollama_client = ollama_client
+
+    # NERExtractor singleton untuk endpoint /recommendations — DI via app.state
+    ner_extractor = NERExtractor(client=ollama_client)
+    app.state.ner_extractor = ner_extractor
+
+    # Kompatibilitas mundur: ner.py masih menggunakan _extractor module-level
     ner._extractor.client = ollama_client
+
     await _warmup_ollama(ollama_client)
 
-    logger.info("Virgo API: siap menerima request.")
+    # ── SAW Service (singleton) ──────────────────────────────────────
+    # SAWService + TalentRepository diinisialisasi sekali — stateless dan
+    # aman dipakai konkuren. Neo4j driver sudah tersedia di app.state.
+    saw_repository = TalentRepository(
+        driver=neo4j_driver,
+        database=os.getenv("NEO4J_DATABASE", "neo4j"),
+    )
+    app.state.saw_service = SAWService(repository=saw_repository)
+
+    logger.info(
+        "Virgo API: siap menerima request. "
+        "Services: NERExtractor, SemanticSimilarityService, SAWService — semua siap."
+    )
     yield
 
     # ── Shutdown ─────────────────────────────────────────────
@@ -107,6 +133,7 @@ app.include_router(etl_router)
 app.include_router(similarity_router)
 app.include_router(ner.router)
 app.include_router(saw_router)
+app.include_router(recommendations_router)
 
 
 @app.get("/", tags=["Info"])
@@ -115,7 +142,7 @@ def root():
         "project": "Virgo Talent Recommendation System",
         "status": "Development",
         "current_increment": 3,
-        "modules": ["NER", "ETL", "Semantic Similarity", "SAW"],
+        "modules": ["NER", "ETL", "Semantic Similarity", "SAW", "Recommendations"],
         "team": ["Geraldin", "Ikhsan", "Harish"],
         "docs": "/docs",
     }

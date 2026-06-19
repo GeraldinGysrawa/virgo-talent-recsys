@@ -25,7 +25,7 @@ from src.core.ollama_client import OllamaConnectionError, OllamaResponseError
 from src.modules.ner.extractor import NERExtractor
 from src.modules.ner.schemas import ExtractionResult
 
-router = APIRouter(prefix="/api/v1/ner", tags=["NER"])
+router = APIRouter(prefix="/ner", tags=["NER"])
 
 # Satu instance extractor dipakai ulang untuk seluruh request
 # (Dependency Injection — mudah diganti saat testing)
