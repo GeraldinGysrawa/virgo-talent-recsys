@@ -40,8 +40,7 @@ _EXCLUDED_STATUS: str = "irreplacable"  # ejaan sesuai data Neo4j
 # Urutan jenjang pendidikan dari terendah ke tertinggi.
 # Digunakan untuk skema penilaian ≥ threshold.
 _EDUCATION_RANK: dict[str, int] = {
-    "SMA": 1,
-    "SMK": 1,
+    "SMA/SMK": 1,
     "D1": 2,
     "D2": 3,
     "D3": 4,
