@@ -38,8 +38,8 @@ Aturan:
 - experience_years_min: angka desimal, bukan string. fresh grad = 0.0
 - location: nama kota lengkap (normalisasi: bdg→Bandung, jkt→Jakarta, sby→Surabaya)
 - is_banking_project: boolean. True jika proyek terkait sektor perbankan, bank, fintech. False jika tidak disebutkan atau sektor lain (e-commerce, telco, dsb).
-- education: flat array jenjang pendidikan (misal: "SMK", "D3", "D4", "S1", "S2", "S3").
-  PENTING: Jika user meminta "minimal S1", JANGAN berikan jenjang di atasnya (CUKUP ["S1"]). Logika minimal akan dihandle oleh backend. Jika user meminta "SMA/SMK", maka ["SMA", "SMK"]. Jika "S1 atau D4", maka ["S1", "D4"]. null jika tidak disebutkan.
+- education: flat array jenjang pendidikan (misal: "SMA/SMK", "D3", "D4", "S1", "S2", "S3").
+  PENTING: Jika user meminta "minimal S1", JANGAN berikan jenjang di atasnya (CUKUP ["S1"]). Logika minimal akan dihandle oleh backend. Jika user meminta "SMA/SMK", maka ["SMA/SMK"]. Namun, jika user meminta "S1 atau D4", maka ["S1", "D4"], SMK/D3 maka ["SMA/SMK", "D3"]. null jika tidak disebutkan.
 
 Contoh:
 Q: "senior react min 3 thn, bdg, fintech"
