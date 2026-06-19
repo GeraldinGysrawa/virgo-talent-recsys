@@ -23,7 +23,6 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY src/ ./src/
 COPY configs/ ./configs/
 COPY ontology/ttl/ ./ontology/ttl/
-COPY plugins/ /plugins
 
 # Non-root user untuk keamanan
 RUN adduser --disabled-password --gecos "" appuser
