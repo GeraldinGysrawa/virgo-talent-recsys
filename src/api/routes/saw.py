@@ -14,6 +14,7 @@ from loguru import logger
 
 from src.modules.saw.schemas import SAWRankRequest, RecommendationResult
 from src.modules.saw.saw_service import SAWService
+from src.modules.saw.talent_repository import TalentRepository
 
 router = APIRouter(prefix="/saw", tags=["SAW Ranking"])
 
@@ -50,10 +51,11 @@ async def rank_talents(body: SAWRankRequest, request: Request) -> Recommendation
     )
 
     try:
-        service = SAWService(
+        repository = TalentRepository(
             driver=neo4j_driver,
             database=os.getenv("NEO4J_DATABASE", "neo4j"),
         )
+        service = SAWService(repository=repository)
         result = service.rank(body)
     except Exception as exc:
         logger.exception("SAW ranking gagal.")
