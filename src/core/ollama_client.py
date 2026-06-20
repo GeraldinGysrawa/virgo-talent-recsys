@@ -27,7 +27,8 @@ class OllamaClient:
     def __init__(self) -> None:
         cfg = get_settings()
         # Persistent client — tidak dibuat ulang setiap request
-        self._client = httpx.AsyncClient(timeout=cfg.ollama_timeout)
+        timeout = httpx.Timeout(cfg.ollama_timeout, connect=cfg.ollama_connect_timeout)
+        self._client = httpx.AsyncClient(timeout=timeout)
         self._endpoint = cfg.ollama_endpoint
         self._headers = {
             "Authorization": cfg.jwt_token,
@@ -89,14 +90,19 @@ class OllamaClient:
         return response.json()
 
     async def _retry(self, payload: dict) -> str:
-        """Coba ulang request sekali. Lempar OllamaConnectionError kalau tetap gagal."""
-        logger.info("Menjalankan retry")
-        try:
-            body = await self._post(payload)
-            return self._extract_text(body)
-        except (httpx.ConnectError, httpx.TimeoutException, httpx.HTTPStatusError) as exc:
-            logger.error(f"Retry gagal | {exc}")
-            raise OllamaConnectionError(str(exc)) from exc
+        """Coba ulang request sesuai konfigurasi. Lempar OllamaConnectionError kalau tetap gagal."""
+        cfg = get_settings()
+        for attempt in range(1, cfg.ollama_max_retries + 1):
+            logger.info(f"Menjalankan retry {attempt}/{cfg.ollama_max_retries}")
+            try:
+                body = await self._post(payload)
+                return self._extract_text(body)
+            except (httpx.ConnectError, httpx.TimeoutException, httpx.HTTPStatusError) as exc:
+                logger.warning(f"Retry {attempt} gagal | {exc}")
+                if attempt == cfg.ollama_max_retries:
+                    logger.error(f"Retry gagal setelah {cfg.ollama_max_retries} percobaan | {exc}")
+                    raise OllamaConnectionError(str(exc)) from exc
+                continue
 
     def _extract_text(self, body: dict) -> str:
         """Ambil teks dari field 'response' body Ollama."""
