@@ -1,8 +1,154 @@
+@prefix : <http://padepokan79.com/ontology/skill#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix virgo: <http://padepokan79.com/ontology/skill#> .
+@base <http://padepokan79.com/ontology/skill#> .
 
-<http://padepokan79.com/ontology/skill> a owl:Ontology .
+<http://padepokan79.com/ontology/skill> rdf:type owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://padepokan79.com/ontology/skill#assignedToProject
+virgo:assignedToProject rdf:type owl:ObjectProperty ;
+                        rdfs:domain virgo:Talent ;
+                        rdfs:range virgo:Project ;
+                        rdfs:label "assignedToProject" .
+
+
+###  http://padepokan79.com/ontology/skill#hasSkill
+virgo:hasSkill rdf:type owl:ObjectProperty ;
+               rdfs:domain virgo:Talent ;
+               rdfs:range virgo:root ;
+               rdfs:label "hasSkill" .
+
+
+###  http://padepokan79.com/ontology/skill#prefersPlacement
+virgo:prefersPlacement rdf:type owl:ObjectProperty ;
+                       rdfs:domain virgo:Talent ;
+                       rdfs:range virgo:Placement ;
+                       rdfs:label "prefersPlacement" .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://padepokan79.com/ontology/skill#concernPerbankan
+virgo:concernPerbankan rdf:type owl:DatatypeProperty ,
+                                owl:FunctionalProperty ;
+                       rdfs:domain virgo:Talent ;
+                       rdfs:range xsd:boolean ;
+                       rdfs:label "concernPerbankan" .
+
+
+###  http://padepokan79.com/ontology/skill#namaLengkap
+virgo:namaLengkap rdf:type owl:DatatypeProperty ,
+                           owl:FunctionalProperty ;
+                  rdfs:domain virgo:Talent ;
+                  rdfs:range xsd:string ;
+                  rdfs:label "namaLengkap" .
+
+
+###  http://padepokan79.com/ontology/skill#namaLokasi
+virgo:namaLokasi rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf owl:topDataProperty ;
+                 rdfs:domain virgo:Placement ;
+                 rdfs:range xsd:string ;
+                 rdfs:label "namaLokasi" .
+
+
+###  http://padepokan79.com/ontology/skill#namaProject
+virgo:namaProject rdf:type owl:DatatypeProperty ,
+                           owl:FunctionalProperty ;
+                  rdfs:domain virgo:Project ;
+                  rdfs:range xsd:string ;
+                  rdfs:label "namaProject" .
+
+
+###  http://padepokan79.com/ontology/skill#nip
+virgo:nip rdf:type owl:DatatypeProperty ,
+                   owl:FunctionalProperty ;
+          rdfs:domain virgo:Talent ;
+          rdfs:range xsd:string ;
+          rdfs:label "nip" .
+
+
+###  http://padepokan79.com/ontology/skill#pengalamanTahun
+virgo:pengalamanTahun rdf:type owl:DatatypeProperty ,
+                               owl:FunctionalProperty ;
+                      rdfs:domain virgo:Talent ;
+                      rdfs:range xsd:nonNegativeInteger ;
+                      rdfs:label "pengalamanTahun" .
+
+
+###  http://padepokan79.com/ontology/skill#projectEndDate
+virgo:projectEndDate rdf:type owl:DatatypeProperty ,
+                              owl:FunctionalProperty ;
+                     rdfs:domain virgo:Talent ;
+                     rdfs:range xsd:dateTime ;
+                     rdfs:label "projectEndDate" .
+
+
+###  http://padepokan79.com/ontology/skill#projectStartDate
+virgo:projectStartDate rdf:type owl:DatatypeProperty ,
+                                owl:FunctionalProperty ;
+                       rdfs:domain virgo:Talent ;
+                       rdfs:range xsd:dateTime ;
+                       rdfs:label "projectStartDate" .
+
+
+###  http://padepokan79.com/ontology/skill#pendidikan
+virgo:pendidikan rdf:type owl:DatatypeProperty ,
+                          owl:FunctionalProperty ;
+                 rdfs:domain virgo:Talent ;
+                 rdfs:range xsd:string ;
+                 rdfs:label "pendidikan" .
+
+
+###  http://padepokan79.com/ontology/skill#statusPenugasan
+virgo:statusPenugasan rdf:type owl:DatatypeProperty ,
+                               owl:FunctionalProperty ;
+                      rdfs:domain virgo:Talent ;
+                      rdfs:range xsd:string ;
+                      rdfs:label "statusPenugasan" .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://padepokan79.com/ontology/skill#Placement
+virgo:Placement rdf:type owl:Class ;
+                rdfs:label "Placement" .
+
+
+###  http://padepokan79.com/ontology/skill#Project
+virgo:Project rdf:type owl:Class ;
+              rdfs:label "Project" .
+
+
+###  http://padepokan79.com/ontology/skill#Talent
+virgo:Talent rdf:type owl:Class ;
+             owl:equivalentClass [ rdf:type owl:Restriction ;
+                                   owl:onProperty virgo:hasSkill ;
+                                   owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                   owl:onClass virgo:root
+                                 ] ;
+             rdfs:subClassOf [ rdf:type owl:Restriction ;
+                               owl:onProperty virgo:hasSkill ;
+                               owl:allValuesFrom virgo:root
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty virgo:nip ;
+                               owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                               owl:onDataRange xsd:string
+                             ] ;
+             rdfs:label "Talent" .
 
 virgo:activityDiagram a owl:Class ;
     rdfs:label "Activity Diagram" ;
