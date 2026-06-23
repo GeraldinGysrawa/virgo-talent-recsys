@@ -88,6 +88,20 @@ class SAWService:
         }
         candidates = self._merge_candidates(profiles, skill_data_map)
 
+        # ── 3.5. Filter Threshold Skill Score ─────────────────
+        SKILL_THRESHOLD = 0.20
+        before_skill_filter = len(candidates)
+        candidates = [
+            c for c in candidates
+            if c.skill_score is None or c.skill_score >= SKILL_THRESHOLD
+        ]
+        skill_filtered_count = before_skill_filter - len(candidates)
+        if skill_filtered_count > 0:
+            logger.info(
+                f"SAWService: {skill_filtered_count} talenta dikeluarkan "
+                f"(skill_score < {SKILL_THRESHOLD})."
+            )
+
         # ── 4. Filter hard exclusion (irreplaceable) ──────────
         before_filter = len(candidates)
         candidates = [
@@ -178,7 +192,7 @@ class SAWService:
 
         for profile in profiles:
             skill_data = skill_data_map.get(profile.nip)
-            skill_score = skill_data.skill_score if skill_data else 0.0
+            skill_score = skill_data.skill_score if skill_data else None
             skills = skill_data.skills if skill_data else []
 
             candidates.append(

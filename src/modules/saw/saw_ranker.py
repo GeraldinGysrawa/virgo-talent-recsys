@@ -138,7 +138,7 @@ class SAWRanker:
                 )
 
             if "skill" in active_criteria:
-                row["skill"] = candidate.skill_score
+                row["skill"] = candidate.skill_score if candidate.skill_score is not None else 0.0
 
             if "pengalaman" in active_criteria:
                 row["pengalaman"] = max(candidate.pengalaman_tahun, 0.0)
