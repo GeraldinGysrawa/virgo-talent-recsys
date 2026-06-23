@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     jwt_token: str
     ollama_model: str = "qwen3:8b"
     ollama_timeout: int = 30
-    ollama_connect_timeout: int = 5
+    ollama_connect_timeout: int = 2
     ollama_max_retries: int = 1
 
     # ── Neo4j ─────────────────────────────────────────────────────────────

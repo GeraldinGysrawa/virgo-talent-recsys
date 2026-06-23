@@ -49,7 +49,7 @@ class NERResponse(BaseModel):
     """Response envelope endpoint NER."""
     success: bool
     data: ExtractionResult | None = None
-    latency_ms: float
+    #latency_ms: float
     error: str | None = None
 
 
@@ -95,6 +95,14 @@ async def extract_entities(request: NERRequest) -> NERResponse:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Respons dari Ollama tidak dapat diproses.",
+        )
+
+    except ValueError as exc:
+        latency_ms = _calc_latency(start_time)
+        logger.error(f"Gagal memproses respons (JSON tidak valid) | {exc}")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Respons dari Ollama bukan JSON valid. Detail: {exc}",
         )
 
     except Exception as exc:
