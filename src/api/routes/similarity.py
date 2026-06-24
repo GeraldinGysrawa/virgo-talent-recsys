@@ -63,6 +63,7 @@ class TalentScoreResponse(BaseModel):
 class RankResponse(BaseModel):
     total_talents   : int
     required_skills : list[list[str]]
+    unrecognized_skills: list[str] = Field(default_factory=list)
     ranked_talents  : list[TalentScoreResponse]
 
 
@@ -104,7 +105,7 @@ async def rank_talents(body: RankRequest, request: Request) -> RankResponse:
     )
 
     try:
-        results = service.rank_talents(body.required_skills)
+        results, unrecognized_skills = service.rank_talents(body.required_skills)
     except Exception as exc:
         logger.exception("Similarity ranking gagal.")
         raise HTTPException(
@@ -131,7 +132,8 @@ async def rank_talents(body: RankRequest, request: Request) -> RankResponse:
     ]
 
     return RankResponse(
-        total_talents   = len(ranked),
-        required_skills = body.required_skills,
-        ranked_talents  = ranked,
+        total_talents       = len(ranked),
+        required_skills     = body.required_skills,
+        unrecognized_skills = unrecognized_skills,
+        ranked_talents      = ranked,
     )

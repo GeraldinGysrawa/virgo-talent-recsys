@@ -71,7 +71,7 @@ class SkillMatcher:
     # Public
     # ----------------------------------------------------------
 
-    def match(self, required_skills: list[list[str]]) -> list[TalentSkillScore]:
+    def match(self, required_skills: list[list[str]]) -> tuple[list[TalentSkillScore], list[str]]:
         """
         Parameters
         ----------
@@ -80,12 +80,13 @@ class SkillMatcher:
             Contoh: [["React.js"], ["PostgreSQL", "MySQL"]]
         """
         if not required_skills:
-            return []
+            return [], []
 
         requirements = parse_requirements(required_skills)
 
         # Validasi semua skill di setiap grup
         valid_requirements: list[SkillRequirement] = []
+        unrecognized_skills: list[str] = []
         for req in requirements:
             valid_skills = [
                 s for s in req.skills
@@ -93,6 +94,7 @@ class SkillMatcher:
             ]
             missing = set(req.skills) - set(valid_skills)
             if missing:
+                unrecognized_skills.extend(missing)
                 logger.warning(
                     f"SkillMatcher: skill tidak ditemukan di ontologi, "
                     f"dibuang dari grup '{req.label}': {missing}"
@@ -105,7 +107,7 @@ class SkillMatcher:
 
         if not valid_requirements:
             logger.error("SkillMatcher: tidak ada requirement valid di ontologi.")
-            return []
+            return [], unrecognized_skills
 
         # Kumpulkan URI semua skill dari semua grup
         req_uris: dict[str, str] = {}
@@ -136,7 +138,9 @@ class SkillMatcher:
             f"SkillMatcher: {len(results)} talenta dihitung "
             f"({'Neo4j' if use_neo4j else 'computed'})."
         )
-        return results
+        # Hapus duplikat dari list unrecognized_skills dan urutkan
+        unrecognized_skills = sorted(list(set(unrecognized_skills)))
+        return results, unrecognized_skills
 
     # ----------------------------------------------------------
     # Private — cek ketersediaan SKILL_SIMILARITY

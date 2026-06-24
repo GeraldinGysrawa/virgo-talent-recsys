@@ -53,14 +53,15 @@ def test_rank_talents_passthrough(mock_matcher_cls, mock_sanchez_cls, mock_graph
     
     # Setup mock matcher behavior
     mock_matcher_instance = mock_matcher_cls.return_value
-    mock_matcher_instance.match.return_value = ["mocked_score"]
+    mock_matcher_instance.match.return_value = (["mocked_score"], ["Missing"])
     
     reqs = [["React"], ["Vue"]]
-    result = service.rank_talents(reqs)
+    result, unrec = service.rank_talents(reqs)
     
     # Memastikan call diteruskan ke matcher.match dengan argumen yang sama
     mock_matcher_instance.match.assert_called_once_with(reqs)
     assert result == ["mocked_score"]
+    assert unrec == ["Missing"]
 
 
 @patch("src.modules.semantic_similarity.similarity_service.ICPrecomputer")

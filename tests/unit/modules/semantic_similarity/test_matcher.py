@@ -46,11 +46,11 @@ def test_matcher_empty_or_invalid_requirements(mock_driver, mock_graph, mock_san
     matcher = SkillMatcher(mock_driver, mock_graph, mock_sanchez)
     
     # Requirement kosong tidak diproses, kembalikan array kosong
-    assert matcher.match([]) == []
+    assert matcher.match([]) == ([], [])
     
     # Requirement yang berisi skill asing (tidak ada di graph/ontologi)
     # Semua skill "UnknownSkill" ditolak -> valid_requirements kosong -> kembalikan []
-    assert matcher.match([["UnknownSkill"]]) == []
+    assert matcher.match([["UnknownSkill"]]) == ([], ["UnknownSkill"])
 
 
 @patch.object(SkillMatcher, '_check_similarity_available', return_value=False)
@@ -70,7 +70,7 @@ def test_fallback_disjunctive_logic(mock_fetch, mock_check, mock_driver, mock_gr
     
     # Disjunctive requirement: ["React", "Vue"] is one group -> OR logic
     reqs = [["React", "Vue"]]
-    results = matcher.match(reqs)
+    results, unrec = matcher.match(reqs)
     
     assert len(results) == 1
     # Expect best score from the group, which is 0.8 (Vue)
@@ -97,7 +97,7 @@ def test_fallback_and_average_logic(mock_fetch, mock_check, mock_driver, mock_gr
     
     # 2 Grup: ["React"] AND ["MySQL" OR "PostgreSQL"]
     reqs = [["React"], ["MySQL", "PostgreSQL"]]
-    results = matcher.match(reqs)
+    results, unrec = matcher.match(reqs)
     
     assert len(results) == 1
     # Group 1 best: 1.0 (React)
@@ -125,7 +125,7 @@ def test_neo4j_mode(mock_fetch, mock_check, mock_driver, mock_graph, mock_sanche
     matcher = SkillMatcher(mock_driver, mock_graph, mock_sanchez)
     reqs = [["React"]]
     
-    results = matcher.match(reqs)
+    results, unrec = matcher.match(reqs)
     
     assert len(results) == 1
     assert results[0].skill_score == 0.9
@@ -141,7 +141,7 @@ def test_talent_without_skills(mock_fetch, mock_check, mock_driver, mock_graph, 
     matcher = SkillMatcher(mock_driver, mock_graph, mock_sanchez)
     reqs = [["React"]]
     
-    results = matcher.match(reqs)
+    results, unrec = matcher.match(reqs)
     
     assert len(results) == 1
     assert results[0].skill_score == 0.0
