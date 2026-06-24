@@ -20,9 +20,9 @@ RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
-COPY src/ ./src/
-COPY configs/ ./configs/
-COPY ontology/ttl/ ./ontology/ttl/
+COPY src/ src
+COPY configs/ configs
+COPY ontology/ttl/ ontology/ttl/
 
 # Non-root user untuk keamanan
 RUN adduser --disabled-password --gecos "" appuser
