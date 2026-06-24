@@ -70,10 +70,15 @@ def test_transformer_invalid_data(mock_normalizer):
         "jenis_penempatan": "tidak jelas",
     }
     
-    # jenis_penempatan error (raise ValueError) akan ditangkap di try-except _transform_row 
-    # dan dilog sebagai warning, sehingga fungsi transform() aman namun melewatinya.
+    # Karena sekarang transformer melonggarkan validasi penempatan,
+    # baris tidak dibuang (len records == 1) dan diteruskan ke Validator.
     records = transformer.transform([raw_row])
-    assert len(records) == 0
+    assert len(records) == 1
+    
+    record = records[0]
+    assert record.pengalaman_tahun == 0.0
+    assert record.concern_perbankan is False
+    assert record.jenis_penempatan == ["tidak jelas"]
 
 
 def test_parse_date_serial():
