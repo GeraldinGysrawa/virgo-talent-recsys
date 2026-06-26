@@ -71,7 +71,7 @@ class SemanticSimilarityService:
         logger.info("SemanticSimilarityService: reload graf skill ...")
         self.initialize()
 
-    def rank_talents(self, required_skills: list[list[str]]) -> list[TalentSkillScore]:
+    def rank_talents(self, required_skills: list[list[str]]) -> tuple[list[TalentSkillScore], list[str]]:
         """
         Menghitung skor kemiripan skill seluruh talenta
         terhadap daftar skill requirement.
@@ -84,8 +84,10 @@ class SemanticSimilarityService:
 
         Returns
         -------
-        list[TalentSkillScore]
-            Diurutkan dari skor tertinggi ke terendah.
+        tuple[list[TalentSkillScore], list[str]]
+            Tuple yang berisi:
+            - Daftar talenta yang diurutkan dari skor tertinggi ke terendah
+            - Daftar skill dari requirement yang tidak ditemukan di ontologi
         """
         if self._matcher is None:
             raise RuntimeError(
