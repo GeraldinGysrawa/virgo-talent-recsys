@@ -2,7 +2,7 @@
 # Dockerfile — virgo-recsys FastAPI Service
 # =============================================================
 
-FROM python:3.11-slim
+FROM harbor.cloudias79.com/internal-virgo/python-base:3.11-slim
 
 # Metadata
 LABEL maintainer="Geraldin Gysrawa, Ikhsan Zuhri, M. Harish Al Rasyidi"
@@ -13,12 +13,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
-
-# Install OS dependencies (minimal)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    openjdk-21-jre \
-    && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies dulu (cache layer)
 COPY requirements.txt .
