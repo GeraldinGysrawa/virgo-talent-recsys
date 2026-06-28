@@ -225,7 +225,7 @@ class Transformer:
         Jakarta yang diterima.
         """
         if not raw_value:
-            raise ValueError("Jenis Penempatan kosong.")
+            return []
 
         candidates = [
             part.strip()
@@ -233,7 +233,7 @@ class Transformer:
             if part.strip()
         ]
         if not candidates:
-            raise ValueError("Jenis Penempatan kosong.")
+            return []
 
         placements: list[str] = []
         for candidate in candidates:
@@ -241,13 +241,14 @@ class Transformer:
             if mapped is not None:
                 if mapped not in placements:
                     placements.append(mapped)
+            else:
+                # Teruskan string yang tidak dikenal agar ditangkap oleh Validator
+                if candidate not in placements:
+                    placements.append(candidate)
 
-        if placements:
-            if len(placements) > 1:
-                logger.warning(
-                    f"NIP={nip}: Jenis Penempatan gabungan '{raw_value}' "
-                    f"ditemukan, memakai {placements}."
-                )
-            return placements
-
-        raise ValueError(f"Jenis Penempatan '{raw_value}' tidak dikenal.")
+        if len(placements) > 1 and any(_PLACEMENT_MAP.get(c) for c in candidates):
+            logger.warning(
+                f"NIP={nip}: Jenis Penempatan gabungan '{raw_value}' "
+                f"ditemukan, memakai {placements}."
+            )
+        return placements

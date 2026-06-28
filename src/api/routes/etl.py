@@ -82,11 +82,19 @@ def _get_similarity_service(request: Request):
     response_model=SyncResponse,
     summary="Trigger sinkronisasi Google Sheets → Neo4j",
 )
-async def sync_etl() -> SyncResponse:
+async def sync_etl(request: Request) -> SyncResponse:
     config = _build_config()
     logger.info("POST /etl/sync — pipeline dimulai.")
     try:
         report: PipelineReport = ETLPipeline(config).run()
+        
+        # Konsep 1: Cek apakah relasi similarity kosong (ETL pertama kali)
+        service = _get_similarity_service(request)
+        service.reload() # Load ulang graf dari Neo4j setelah data ditulis
+        if service.is_similarity_empty():
+            logger.info("POST /etl/sync — Relasi SKILL_SIMILARITY kosong. Menjalankan precompute otomatis...")
+            service.recompute_ic_similarity()
+            
     except Exception as exc:
         logger.exception("ETL pipeline gagal.")
         raise HTTPException(
