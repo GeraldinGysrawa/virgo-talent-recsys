@@ -78,7 +78,7 @@ virgo-talent-recsys/
 │   └── credentials.json          ← file JSON Service Account Google
 ├── ontology/
 │   └── ttl/
-│       └── Data model v2.ttl     ← file ontologi hasil ekspor Protégé
+│       └── virgo_skills_ontology.ttl     ← file ontologi hasil ekspor Protégé
 ├── plugins/
 │   └── neosemantics-*.jar        ← plugin n10s untuk Neo4j
 └── src/
@@ -98,7 +98,7 @@ GOOGLE_SPREADSHEET_ID=<isi dengan ID spreadsheet aktual>
 GOOGLE_WORKSHEET_NAME=                    # kosongkan = sheet pertama
 
 # Ontologi
-ONTOLOGY_TTL_PATH=ontology/ttl/Data model v2.ttl
+ONTOLOGY_TTL_PATH=ontology/ttl/virgo_skills_ontology.ttl
 ```
 
 ### 2.4 Persiapan Google Sheets
@@ -178,7 +178,7 @@ CALL n10s.graphconfig.init({
 
 ```cypher
 CALL n10s.rdf.import.fetch(
-  "file:///import/ontology/Data%20model%20v2.ttl",
+  "file:///import/ontology/virgo_skills_ontology.ttl",
   "Turtle"
 );
 ```
@@ -190,7 +190,7 @@ CALL n10s.rdf.import.fetch(
 MATCH (s:owl__Class)
 WHERE s.uri CONTAINS "padepokan79"
 RETURN count(s) AS total_skill_node;
--- Expected: 360
+-- Expected: 372
 ```
 
 ```cypher
@@ -243,11 +243,11 @@ Response yang diharapkan:
 
 ```json
 {
-  "total_nodes": 360,
-  "total_pairs": 64620,
-  "similarity_written": 64620,
+  "total_nodes": 372,
+  "total_pairs": 69006,
+  "similarity_written": 69006,
   "errors": [],
-  "duration_seconds": 22.597
+  "duration_seconds": 24.120
 }
 ```
 
@@ -272,7 +272,7 @@ Hasil yang diharapkan:
 
 | tipe | jumlah |
 |---|---|
-| `["Resource", "owl__Class"]` | 360 |
+| `["Resource", "owl__Class"]` | 372 |
 | `["Talent"]` | 250 |
 | `["Project"]` | 21 |
 | `["Placement"]` | 4 |
@@ -383,7 +383,33 @@ LIMIT 10;
 ```cypher
 MATCH ()-[r:SKILL_SIMILARITY]->()
 RETURN count(r) AS total_pasangan;
--- Expected: 64620
+-- Expected: 69006
+```
+
+### 7.6 Analisis Similarity Lanjutan (Threshold & Alternatif)
+
+**1. Mengecek Nilai Kemiripan (React vs Vue)**
+```cypher
+MATCH (s1:owl__Class)-[r:SKILL_SIMILARITY]-(s2:owl__Class) 
+WHERE toLower(s1.rdfs__label) CONTAINS 'react' AND toLower(s2.rdfs__label) CONTAINS 'vue' 
+RETURN s1.rdfs__label AS Skill_1, s2.rdfs__label AS Skill_2, r.score AS Nilai_Similarity
+```
+
+**2. Melihat Semua Pasangan Skill dengan Skor di Atas Threshold (Misal > 0.41)**
+```cypher
+MATCH (s1:owl__Class)-[r:SKILL_SIMILARITY]->(s2:owl__Class)
+WHERE r.score > 0.41
+RETURN s1.rdfs__label AS Skill_1, s2.rdfs__label AS Skill_2, r.score AS Nilai_Similarity
+ORDER BY r.score DESC
+LIMIT 100
+```
+
+**3. Mencari Semua Alternatif Relevan untuk React.js (Skor > 0.41)**
+```cypher
+MATCH (s1:owl__Class)-[r:SKILL_SIMILARITY]-(s2:owl__Class)
+WHERE toLower(s1.rdfs__label) = 'react.js' AND r.score > 0.41
+RETURN s1.rdfs__label AS Skill_Utama, s2.rdfs__label AS Skill_Alternatif, r.score AS Nilai_Similarity
+ORDER BY r.score DESC
 ```
 
 ---
@@ -429,10 +455,10 @@ Dokumentasi interaktif tersedia di `http://localhost:8000/docs`.
 | Container `virgo-api` tidak `healthy` | Neo4j belum siap saat startup | Tunggu 60 detik, lalu `docker compose restart api` |
 | `POST /etl/sync` error `credentials` | `credentials.json` tidak ditemukan | Periksa `GOOGLE_CREDENTIALS_PATH` di `.env` |
 | `POST /etl/sync` error `403 Forbidden` | Email Service Account belum diberi akses | Tambahkan email Service Account sebagai *viewer* di Google Sheets |
-| Import ontologi gagal | Nama file mengandung spasi | Gunakan `Data%20model%20v2.ttl` (URL-encode) |
-| `total_skill_node` kurang dari 360 | Import tidak lengkap | Hapus data lama dan ulangi import dari langkah 4.1 |
+| Import ontologi gagal | Nama file salah | Gunakan `virgo_skills_ontology.ttl` |
+| `total_skill_node` kurang dari 372 | Import tidak lengkap | Hapus data lama dan ulangi import dari langkah 4.1 |
 | `similarity_written: 0` | Node `owl__Class` tidak ditemukan | Pastikan import ontologi berhasil (langkah 4.4) |
-| `POST /etl/recompute-ic` lambat | Normal — 64.620 pasangan dihitung dan ditulis ke Neo4j | Tunggu hingga selesai, proses batch per 500 pasangan |
+| `POST /etl/recompute-ic` lambat | Normal — 69.006 pasangan dihitung dan ditulis ke Neo4j | Tunggu hingga selesai, proses batch per 500 pasangan |
 
 ---
 

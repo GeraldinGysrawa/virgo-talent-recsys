@@ -100,11 +100,6 @@ class SheetsReader:
             # NIP harus dipertahankan sebagai string agar nol di depan tidak hilang.
             mapped["nip"] = str(mapped.get("nip", "")).strip()
 
-            # Lewati baris yang NIP-nya kosong
-            if not str(mapped.get("nip", "")).strip():
-                logger.warning(f"Baris {idx}: NIP kosong, dilewati.")
-                continue
-
             normalized.append(mapped)
 
         logger.info(f"SheetsReader: {len(normalized)} baris berhasil dibaca.")
