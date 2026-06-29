@@ -41,10 +41,6 @@ class ExtractionResult(BaseModel):
             "Contoh AND+OR: [['Python'],['PostgreSQL','MySQL']]"
         ),
     )
-    seniority: str | None = Field(
-        default=None,
-        description="Tingkat senioritas: 'junior', 'mid', atau 'senior'.",
-    )
     experience_years_min: float | None = Field(
         default=None,
         description="Durasi pengalaman minimum dalam tahun. Contoh: 3.0.",
