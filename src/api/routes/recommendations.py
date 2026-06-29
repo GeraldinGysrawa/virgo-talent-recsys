@@ -119,6 +119,14 @@ def _build_saw_request(
             nama_lengkap=s.nama_lengkap,
             skill_score=s.skill_score,
             skills=s.talent_skills,
+            match_details=[
+                {
+                    "required_skill": d.required_skill,
+                    "best_match_skill": d.best_match_skill,
+                    "similarity_score": d.similarity_score,
+                }
+                for d in s.match_details
+            ],
         )
         for s in scores
     ]
