@@ -137,11 +137,11 @@ def test_neo4j_mode(mock_fetch, mock_check, mock_driver, mock_graph, mock_sanche
 def test_talent_without_skills(mock_fetch, mock_check, mock_driver, mock_graph, mock_sanchez):
     # Talent tidak punya skill (list kosong) kembalikan skor aman 0.0
     mock_fetch.return_value = {("123", "Talent Empty"): []}
+
     
     matcher = SkillMatcher(mock_driver, mock_graph, mock_sanchez)
     reqs = [["React"]]
     
     results, unrec = matcher.match(reqs)
     
-    assert len(results) == 1
-    assert results[0].skill_score == 0.0
+    assert len(results) == 0

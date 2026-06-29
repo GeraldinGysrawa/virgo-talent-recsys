@@ -88,6 +88,7 @@ class SAWService:
         }
         candidates = self._merge_candidates(profiles, skill_data_map)
 
+
         # ── 4. Filter hard exclusion (irreplaceable) ──────────
         before_filter = len(candidates)
         candidates = [
