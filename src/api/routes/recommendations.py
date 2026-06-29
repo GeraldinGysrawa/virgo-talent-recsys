@@ -191,7 +191,7 @@ async def recommend(
 
     # RR → SIM: rank_talents(ExtractionResult.skills)
     try:
-        scores: list[TalentSkillScore] = similarity_service.rank_talents(
+        scores, unrecognized = similarity_service.rank_talents(
             extraction.skills
         )
     except Exception as exc:

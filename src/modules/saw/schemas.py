@@ -64,11 +64,11 @@ class TalentScoreInput(BaseModel):
 
     nip: str = Field(..., description="NIP unik talenta")
     nama_lengkap: str = Field(..., description="Nama lengkap talenta")
-    skill_score: float | None = Field(
-        default=None,
+    skill_score: float = Field(
+        ...,
         ge=0.0,
         le=1.0,
-        description="Skor kemiripan skill dari Sánchez Similarity (0.0–1.0), null jika tidak ada skill requirement",
+        description="Skor kemiripan skill dari Sánchez Similarity (0.0–1.0)",
     )
     skills: list[str] = Field(
         default_factory=list,
@@ -131,7 +131,7 @@ class SAWCandidate:
 
     nip: str
     nama_lengkap: str
-    skill_score: float | None
+    skill_score: float
     skills: list[str]
     ketersediaan: str
     pendidikan: str | None
