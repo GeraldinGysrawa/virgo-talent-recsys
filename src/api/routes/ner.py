@@ -62,7 +62,7 @@ class NERResponse(BaseModel):
     summary="Ekstraksi entitas kebutuhan talenta",
     description=(
         "Menerima kalimat natural kebutuhan talenta dan mengekstrak "
-        "enam slot entitas: skill, seniority, pengalaman, lokasi, "
+        "lima slot entitas: skill, pengalaman, lokasi, "
         "sektor proyek, dan pendidikan."
     ),
 )
