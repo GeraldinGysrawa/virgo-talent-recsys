@@ -89,7 +89,7 @@ class SAWService:
         candidates = self._merge_candidates(profiles, skill_data_map)
 
         # ── 3.5. Filter Threshold Skill Score ─────────────────
-        SKILL_THRESHOLD = 0.20
+        SKILL_THRESHOLD = 0.4
         before_skill_filter = len(candidates)
         candidates = [
             c for c in candidates
