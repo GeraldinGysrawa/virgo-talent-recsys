@@ -211,10 +211,6 @@ async def recommend(
 
     logger.info(f"Semantic selesai | {len(scores)} talenta diranking.")
 
-    # Filter kandidat berdasarkan threshold kecocokan skill
-    scores = [s for s in scores if s.skill_score >= 0.4]
-    logger.info(f"Setelah filter threshold (>= 0.4) | {len(scores)} talenta tersisa.")
-
     if not scores:
         logger.warning("Tidak ada kandidat dari modul Semantic yang memenuhi threshold (scores kosong). Melewati tahap SAW.")
         return RecommendationResult(
