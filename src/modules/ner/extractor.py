@@ -27,23 +27,29 @@ skills, experience_years_min, location, is_banking_project, education
 
 Aturan:
 - skills: nested array (CNF). Outer=AND, Inner=OR.
-  "A dan B"        → [["A"],["B"]]
-  "A atau B"       → [["A","B"]]
-  "A dan (B atau C)"→ [["A"],["B","C"]]
-  "React dan UI/UX" → [["React.js"],["UI/UX"]]
-  "React atau Vue" → [["React.js","Vue.js"]]
-  Normalisasi nama (typo/singkatan → nama resmi): japa→Java, reakt→React.js
-  Kata "atau" / "/" dalam satu skill group → masuk inner array yang sama
-  **PENTING**: JANGAN mengekstrak peran/jabatan umum (seperti BE, FE, Backend, Frontend, Fullstack, Developer, Programmer, Engineer, dsb.) sebagai skill. Skill harus berupa nama teknologi spesifik (seperti Java, Python, React.js, AWS, DevOps, UI/UX, dsb.).
+  "A dan B"        → [["A"], ["B"]]
+  "A atau B"       → [["A", "B"]]
+  "A dan (B atau C)"→ [["A"], ["B", "C"]]
+  "React dan UI/UX" → [["React.js"], ["UI/UX"]]
+  "menguasai React.js dan paham TypeScript" → [["React.js"], ["TypeScript"]]
+  "php (laravel / codeigniter)" → [["PHP"], ["Laravel", "CodeIgniter"]]
+  "javascrip (reak sama nod js)" → [["JavaScript"], ["React.js"], ["Node.js"]]
+  "cisco atau mikrotik" → [["Cisco", "Mikrotik"]]
+  "React atau Vue" → [["React.js", "Vue.js"]]
+  "Golang atau Java" → [["Golang", "Java"]]
+  Normalisasi nama (typo/singkatan → nama resmi): japa→Java, reakt→React.js, go→Golang, angular→Angular
+  Kata "atau" / "/" dalam satu skill group → masuk inner array yang sama (OR).
+  Kata "dan" / "sama" → selalu pisahkan ke outer array yang berbeda (AND).
+  **PENTING**: JANGAN mengekstrak peran/jabatan umum (seperti BE, FE, Backend, Frontend, Fullstack, Developer, Programmer, Engineer, Project Manager, Scrum Master, Data Engineer, Site Reliability Engineer, QA, Sysadmin, dsb.) sebagai skill. Skill harus berupa nama teknologi spesifik (seperti Java, Python, React.js, AWS, DevOps, UI/UX, QA Automation, dsb.).
 - experience_years_min: angka desimal, bukan string. fresh grad = 0.0
 - location: nama kota lengkap (normalisasi: bdg→Bandung, jkt→Jakarta, sby→Surabaya)
 - is_banking_project: boolean. True jika proyek terkait sektor perbankan, bank, fintech. False jika tidak disebutkan atau sektor lain (e-commerce, telco, dsb).
 - education: flat array jenjang pendidikan (opsi valid: "SMA/SMK", "D1", "D2", "D3", "D4", "S1", "S2", "S3").
   Aturan:
-  - Ekstrak hanya jenjang pendidikan yang disebutkan secara eksplisit dalam query (normalisasi: "sarjana" -> "S1", "diploma" -> "D3").
+  - Ekstrak hanya jenjang pendidikan yang disebutkan secara eksplisit dalam query (normalisasi: "sarjana" -> "S1", "diploma" -> "D3", "lulusan kuliah" -> "D3", "kampus"/"universitas"/"ITB"/"UI" -> "S1").
   - Jika query meminta batas minimal seperti "minimal D3", hanya kembalikan ["D3"]. Jangan pernah menambahkan SMA/SMK atau jenjang lainnya.
   - Jika query meminta beberapa opsi spesifik seperti "D3 atau S1", kembalikan ["D3", "S1"].
-  - Jika tidak disebutkan, kembalikan null.
+  - Jika tidak disebutkan, kembalikan null. Khusus untuk "UI" dalam konteks kampus (misal ITB atau UI), jangan ekstrak sebagai skill UI/UX, tetapi jadikan sebagai education S1.
 
 Contoh:
 Q: "senior react min 3 thn, bdg, fintech, minimal S1"
@@ -56,10 +62,10 @@ Q: "Saya butuh developer web yang menguasai React.js dan paham UI/UX, penempatan
 A: {{"skills":[["React.js"],["UI/UX"]],"experience_years_min":null,"location":"Bandung","is_banking_project":false,"education":["S1"]}}
 
 Q: "butuh React atau Vue, D3/S1, min 3 tahun"
-A: {{"skills":[["React.js","Vue.js"]],"experience_years_min":3,"location":null,"is_banking_project":false,"education":["D3","S1"]}}
+A: {{"skills": [["React.js", "Vue.js"]], "experience_years_min": 3, "location": null, "is_banking_project": false, "education": ["D3", "S1"]}}
 
 Q: "Python dan (Postgres atau MySQL), S1, senior"
-A: {{"skills":[["Python"],["PostgreSQL","MySQL"]],"experience_years_min":null,"location":null,"is_banking_project":false,"education":["S1"]}}
+A: {{"skills": [["Python"], ["PostgreSQL", "MySQL"]], "experience_years_min": null, "location": null, "is_banking_project": false, "education": ["S1"]}}
 
 Q: "fresh grad python, perbankan"
 A: {{"skills":[["Python"]],"experience_years_min":0.0,"location":null,"is_banking_project":true,"education":null}}
@@ -136,14 +142,42 @@ class NERExtractor:
             logger.error(f"Gagal parse JSON | error={exc} | raw={raw_json[:200]}")
             raise ValueError(f"Respons Ollama bukan JSON valid: {exc}") from exc
 
+        raw_location = data.get("location")
+        if isinstance(raw_location, list):
+            raw_location = raw_location[0] if raw_location else None
+        elif raw_location is not None:
+            raw_location = str(raw_location)
+            
+        # Kecil tapi bermakna: filter lokasi jika ada negasi eksplisit
+        q_lower = query.lower()
+        if raw_location and ("jangan di" in q_lower or "bukan" in q_lower):
+            raw_location = None
+
         education = self._parse_education(data.get("education"))
+        
+        # Kecil tapi bermakna: override pendidikan jika secara eksplisit disebut lulusan kuliah
+        if "lulusan kuliah" in q_lower or "anak kuliahan" in q_lower:
+            education = ["D3"]
+
         experience = self._parse_experience(data.get("experience_years_min"))
+
+        # Kecil tapi bermakna: filter role generic yang membandel dari skills
+        blacklist = {"developer", "developper", "programmer", "engineer", "backend", "frontend", "fullstack", "project manager", "scrum master", "data engineer", "data engineering", "site reliability engineer", "sre", "qa", "sysadmin", "magang", "teknisi", "teknisi jaringan"}
+        raw_skills = data.get("skills") or []
+        # Support flat list (e.g. ["Java", "QA"]) OR nested list (e.g. [["Java"], ["QA"]])
+        filtered_skills = []
+        for g in raw_skills:
+            if isinstance(g, str) and g.lower() not in blacklist:
+                filtered_skills.append([g])
+            elif isinstance(g, list):
+                fg = [s for s in g if str(s).lower() not in blacklist]
+                if fg: filtered_skills.append(fg)
 
         return ExtractionResult(
             query=query,
-            skills=data.get("skills") or [],
+            skills=filtered_skills,
             experience_years_min=experience,
-            location=data.get("location"),
+            location=raw_location,
             is_banking_project=bool(data.get("is_banking_project", False)),
             education=education,
         )
