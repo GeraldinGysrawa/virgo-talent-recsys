@@ -108,6 +108,7 @@ class RankResultFormatter:
                     pendidikan=candidate_data.pendidikan if candidate_data else None,
                     pengalaman_tahun=candidate_data.pengalaman_tahun if candidate_data else 0.0,
                     skills=candidate_data.skills if candidate_data else [],
+                    match_details=candidate_data.match_details if candidate_data else [],
                     lokasi_penempatan=candidate_data.lokasi_penempatan if candidate_data else [],
                     concern_perbankan=candidate_data.concern_perbankan if candidate_data else False,
                     final_score=ranked.final_score,

@@ -181,6 +181,7 @@ class SAWService:
             skill_data = skill_data_map.get(profile.nip)
             skill_score = skill_data.skill_score if skill_data else 0.0
             skills = skill_data.skills if skill_data else []
+            match_details = skill_data.match_details if skill_data else []
 
             candidates.append(
                 SAWCandidate(
@@ -193,6 +194,7 @@ class SAWService:
                     pengalaman_tahun=profile.pengalaman_tahun,
                     lokasi_penempatan=profile.lokasi_penempatan,
                     concern_perbankan=profile.concern_perbankan,
+                    match_details=match_details,
                 )
             )
 

@@ -119,6 +119,14 @@ def _build_saw_request(
             nama_lengkap=s.nama_lengkap,
             skill_score=s.skill_score,
             skills=s.talent_skills,
+            match_details=[
+                {
+                    "required_skill": d.required_skill,
+                    "best_match_skill": d.best_match_skill,
+                    "similarity_score": d.similarity_score,
+                }
+                for d in s.match_details
+            ],
         )
         for s in scores
     ]
@@ -191,7 +199,7 @@ async def recommend(
 
     # RR → SIM: rank_talents(ExtractionResult.skills)
     try:
-        scores, unrecognized = similarity_service.rank_talents(
+        scores, _ = similarity_service.rank_talents(
             extraction.skills
         )
     except Exception as exc:
@@ -204,11 +212,11 @@ async def recommend(
     logger.info(f"Semantic selesai | {len(scores)} talenta diranking.")
 
     if not scores:
-        logger.warning("Tidak ada kandidat dari modul Semantic (scores kosong). Melewati tahap SAW.")
+        logger.warning("Tidak ada kandidat dari modul Semantic yang memenuhi threshold (scores kosong). Melewati tahap SAW.")
         return RecommendationResult(
             message=(
                 "Tidak ditemukan talenta yang memenuhi kriteria skill tersebut "
-                "(atau skill tidak terdaftar di sistem)."
+                "(atau skill tidak terdaftar di sistem dengan tingkat kemiripan yang cukup)."
             ),
             top_talents=[],
             other_talents=[],
