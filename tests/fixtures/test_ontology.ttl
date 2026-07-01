@@ -1,0 +1,32 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://padepokan79.com/ontology#> .
+
+<http://padepokan79.com/ontology>
+    a owl:Ontology .
+
+:Talent a owl:Class .
+
+:Skill a owl:Class .
+
+:nip a owl:DatatypeProperty ;
+    rdfs:domain :Talent ;
+    rdfs:range xsd:string .
+
+:hasSkill a owl:ObjectProperty ;
+    rdfs:domain :Talent ;
+    rdfs:range :Skill .
+
+:Python a owl:Class ;
+    rdfs:subClassOf :Skill ;
+    rdfs:label "Python" .
+
+:JavaScript a owl:Class ;
+    rdfs:subClassOf :Skill ;
+    rdfs:label "JavaScript" .
+
+:ReactJS a owl:Class ;
+    rdfs:subClassOf :Skill ;
+    rdfs:label "React.js" .
