@@ -59,6 +59,14 @@ _VALID_EDUCATION: set[str] = set(_EDUCATION_RANK.keys())
 # ----------------------------------------------------------
 
 
+class SkillMatchItem(BaseModel):
+    """Detail perbandingan skill yang dicari dan best match milik talenta."""
+
+    required_skill: str = Field(..., description="Skill yang dicari dari kueri NER")
+    best_match_skill: str = Field(..., description="Skill talenta dengan kemiripan tertinggi")
+    similarity_score: float = Field(..., description="Skor kemiripan (0.0–1.0)")
+
+
 class TalentScoreInput(BaseModel):
     """Satu talenta dari output endpoint /similarity/rank."""
 
@@ -73,6 +81,10 @@ class TalentScoreInput(BaseModel):
     skills: list[str] = Field(
         default_factory=list,
         description="Daftar keahlian yang cocok dari semantic similarity",
+    )
+    match_details: list[SkillMatchItem] = Field(
+        default_factory=list,
+        description="Detail kecocokan skill dari semantic similarity",
     )
 
 
@@ -138,6 +150,7 @@ class SAWCandidate:
     pengalaman_tahun: float
     lokasi_penempatan: list[str] = field(default_factory=list)
     concern_perbankan: bool = False
+    match_details: list[SkillMatchItem] = field(default_factory=list)
 
 
 @dataclass
@@ -167,6 +180,10 @@ class TalentRecommendation(BaseModel):
     pendidikan: str | None = Field(default=None, description="Jenjang pendidikan")
     pengalaman_tahun: float = Field(..., description="Pengalaman dalam tahun")
     skills: list[str] = Field(default_factory=list, description="Keahlian yang relevan")
+    match_details: list[SkillMatchItem] = Field(
+        default_factory=list,
+        description="Detail perbandingan skill yang dicari dan best match milik talenta",
+    )
     lokasi_penempatan: list[str] = Field(default_factory=list, description="Daftar lokasi penempatan yang bersedia")
     concern_perbankan: bool = Field(default=False, description="True jika memiliki keberatan pada proyek perbankan")
     final_score: float = Field(..., description="Skor akhir SAW (0.0–1.0)")

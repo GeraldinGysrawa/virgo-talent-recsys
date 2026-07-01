@@ -119,6 +119,14 @@ def _build_saw_request(
             nama_lengkap=s.nama_lengkap,
             skill_score=s.skill_score,
             skills=s.talent_skills,
+            match_details=[
+                {
+                    "required_skill": d.required_skill,
+                    "best_match_skill": d.best_match_skill,
+                    "similarity_score": d.similarity_score,
+                }
+                for d in s.match_details
+            ],
         )
         for s in scores
     ]
@@ -202,10 +210,6 @@ async def recommend(
         )
 
     logger.info(f"Semantic selesai | {len(scores)} talenta diranking.")
-
-    # Filter kandidat berdasarkan threshold kecocokan skill
-    scores = [s for s in scores if s.skill_score >= 0.4]
-    logger.info(f"Setelah filter threshold (>= 0.4) | {len(scores)} talenta tersisa.")
 
     if not scores:
         logger.warning("Tidak ada kandidat dari modul Semantic yang memenuhi threshold (scores kosong). Melewati tahap SAW.")

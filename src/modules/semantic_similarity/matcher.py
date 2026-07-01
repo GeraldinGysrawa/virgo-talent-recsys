@@ -48,6 +48,9 @@ class TalentSkillScore:
     talent_skills : list[str]              = field(default_factory=list)
 
 
+SKILL_THRESHOLD = 0.40
+
+
 class SkillMatcher:
     """
     Menghitung skor kemiripan skill seluruh talenta terhadap
@@ -131,7 +134,8 @@ class SkillMatcher:
                 score_obj = self._compute_score_fallback(
                     nip, nama, valid_requirements, skill_labels
                 )
-            results.append(score_obj)
+            if score_obj is not None:
+                results.append(score_obj)
 
         results.sort(key=lambda x: x.skill_score, reverse=True)
         logger.info(
@@ -195,12 +199,10 @@ class SkillMatcher:
         requirements        : list[SkillRequirement],
         req_uris            : dict[str, str],
         talent_skill_labels : list[str],
-    ) -> TalentSkillScore:
+    ) -> TalentSkillScore | None:
 
         if not talent_skill_labels:
-            return TalentSkillScore(
-                nip=nip, nama_lengkap=nama_lengkap, skill_score=0.0
-            )
+            return None
 
         # URI skill talenta yang ditemukan di ontologi
         talent_uris: dict[str, str] = {}
@@ -210,10 +212,7 @@ class SkillMatcher:
                 talent_uris[label] = node.uri
 
         if not talent_uris:
-            return TalentSkillScore(
-                nip=nip, nama_lengkap=nama_lengkap,
-                skill_score=0.0, talent_skills=talent_skill_labels
-            )
+            return None
 
         # Query similarity semua req_uri vs semua talent_uri sekaligus
         cypher = """
@@ -263,6 +262,9 @@ class SkillMatcher:
                         best_score = score
                         best_label = talent_label
 
+            if best_score < SKILL_THRESHOLD:
+                return None
+
             match_details.append(SkillMatchDetail(
                 required_skill   = req.label,
                 best_match_skill = best_label,
@@ -291,12 +293,10 @@ class SkillMatcher:
         nama_lengkap        : str,
         requirements        : list[SkillRequirement],
         talent_skill_labels : list[str],
-    ) -> TalentSkillScore:
+    ) -> TalentSkillScore | None:
 
         if not talent_skill_labels:
-            return TalentSkillScore(
-                nip=nip, nama_lengkap=nama_lengkap, skill_score=0.0
-            )
+            return None
 
         match_details    : list[SkillMatchDetail] = []
         total_similarity : float                  = 0.0
@@ -312,6 +312,9 @@ class SkillMatcher:
                     if sim > best_score:
                         best_score = sim
                         best_label = talent_skill
+
+            if best_score < SKILL_THRESHOLD:
+                return None
 
             match_details.append(SkillMatchDetail(
                 required_skill   = req.label,
