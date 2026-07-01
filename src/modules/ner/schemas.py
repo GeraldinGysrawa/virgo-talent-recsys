@@ -41,10 +41,6 @@ class ExtractionResult(BaseModel):
             "Contoh AND+OR: [['Python'],['PostgreSQL','MySQL']]"
         ),
     )
-    seniority: str | None = Field(
-        default=None,
-        description="Tingkat senioritas: 'junior', 'mid', atau 'senior'.",
-    )
     experience_years_min: float | None = Field(
         default=None,
         description="Durasi pengalaman minimum dalam tahun. Contoh: 3.0.",
@@ -53,13 +49,13 @@ class ExtractionResult(BaseModel):
         default=None,
         description="Kota penempatan (nama lengkap). Contoh: 'Bandung'.",
     )
-    start_date: str | None = Field(
-        default=None,
-        description="Tanggal mulai proyek format dd/mm/yyyy. Contoh: '01/05/2026'.",
-    )
-    project_sector: str | None = Field(
-        default=None,
-        description="Sektor industri proyek. Contoh: 'perbankan', 'fintech'.",
+
+    is_banking_project: bool = Field(
+        default=False,
+        description=(
+            "True jika proyek terkait sektor perbankan/bank/fintech. "
+            "False jika tidak disebutkan atau sektor lain."
+        ),
     )
     education: list[str] | None = Field(
         default=None,

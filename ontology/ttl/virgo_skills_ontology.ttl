@@ -1,0 +1,1655 @@
+@prefix : <http://padepokan79.com/ontology/skill#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix virgo: <http://padepokan79.com/ontology/skill#> .
+@base <http://padepokan79.com/ontology/skill#> .
+
+<http://padepokan79.com/ontology/skill> a owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://padepokan79.com/ontology/skill#assignedToProject
+virgo:assignedToProject rdf:type owl:ObjectProperty ;
+                        rdfs:domain virgo:Talent ;
+                        rdfs:range virgo:Project ;
+                        rdfs:label "assignedToProject" .
+
+
+###  http://padepokan79.com/ontology/skill#hasSkill
+virgo:hasSkill rdf:type owl:ObjectProperty ;
+               rdfs:domain virgo:Talent ;
+               rdfs:range virgo:root ;
+               rdfs:label "hasSkill" .
+
+
+###  http://padepokan79.com/ontology/skill#prefersPlacement
+virgo:prefersPlacement rdf:type owl:ObjectProperty ;
+                       rdfs:domain virgo:Talent ;
+                       rdfs:range virgo:Placement ;
+                       rdfs:label "prefersPlacement" .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://padepokan79.com/ontology/skill#concernPerbankan
+virgo:concernPerbankan rdf:type owl:DatatypeProperty ,
+                                owl:FunctionalProperty ;
+                       rdfs:domain virgo:Talent ;
+                       rdfs:range xsd:boolean ;
+                       rdfs:label "concernPerbankan" .
+
+
+###  http://padepokan79.com/ontology/skill#namaLengkap
+virgo:namaLengkap rdf:type owl:DatatypeProperty ,
+                           owl:FunctionalProperty ;
+                  rdfs:domain virgo:Talent ;
+                  rdfs:range xsd:string ;
+                  rdfs:label "namaLengkap" .
+
+
+###  http://padepokan79.com/ontology/skill#namaLokasi
+virgo:namaLokasi rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf owl:topDataProperty ;
+                 rdfs:domain virgo:Placement ;
+                 rdfs:range xsd:string ;
+                 rdfs:label "namaLokasi" .
+
+
+###  http://padepokan79.com/ontology/skill#namaProject
+virgo:namaProject rdf:type owl:DatatypeProperty ,
+                           owl:FunctionalProperty ;
+                  rdfs:domain virgo:Project ;
+                  rdfs:range xsd:string ;
+                  rdfs:label "namaProject" .
+
+
+###  http://padepokan79.com/ontology/skill#nip
+virgo:nip rdf:type owl:DatatypeProperty ,
+                   owl:FunctionalProperty ;
+          rdfs:domain virgo:Talent ;
+          rdfs:range xsd:string ;
+          rdfs:label "nip" .
+
+
+###  http://padepokan79.com/ontology/skill#pengalamanTahun
+virgo:pengalamanTahun rdf:type owl:DatatypeProperty ,
+                               owl:FunctionalProperty ;
+                      rdfs:domain virgo:Talent ;
+                      rdfs:range xsd:nonNegativeInteger ;
+                      rdfs:label "pengalamanTahun" .
+
+
+###  http://padepokan79.com/ontology/skill#projectEndDate
+virgo:projectEndDate rdf:type owl:DatatypeProperty ,
+                              owl:FunctionalProperty ;
+                     rdfs:domain virgo:Talent ;
+                     rdfs:range xsd:dateTime ;
+                     rdfs:label "projectEndDate" .
+
+
+###  http://padepokan79.com/ontology/skill#projectStartDate
+virgo:projectStartDate rdf:type owl:DatatypeProperty ,
+                                owl:FunctionalProperty ;
+                       rdfs:domain virgo:Talent ;
+                       rdfs:range xsd:dateTime ;
+                       rdfs:label "projectStartDate" .
+
+
+###  http://padepokan79.com/ontology/skill#pendidikan
+virgo:pendidikan rdf:type owl:DatatypeProperty ,
+                          owl:FunctionalProperty ;
+                 rdfs:domain virgo:Talent ;
+                 rdfs:range xsd:string ;
+                 rdfs:label "pendidikan" .
+
+
+###  http://padepokan79.com/ontology/skill#statusPenugasan
+virgo:statusPenugasan rdf:type owl:DatatypeProperty ,
+                               owl:FunctionalProperty ;
+                      rdfs:domain virgo:Talent ;
+                      rdfs:range xsd:string ;
+                      rdfs:label "statusPenugasan" .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://padepokan79.com/ontology/skill#Placement
+virgo:Placement rdf:type owl:Class ;
+                rdfs:label "Placement" .
+
+
+###  http://padepokan79.com/ontology/skill#Project
+virgo:Project rdf:type owl:Class ;
+              rdfs:label "Project" .
+
+
+###  http://padepokan79.com/ontology/skill#Talent
+virgo:Talent rdf:type owl:Class ;
+             owl:equivalentClass [ rdf:type owl:Restriction ;
+                                   owl:onProperty virgo:hasSkill ;
+                                   owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                   owl:onClass virgo:root
+                                 ] ;
+             rdfs:subClassOf [ rdf:type owl:Restriction ;
+                               owl:onProperty virgo:hasSkill ;
+                               owl:allValuesFrom virgo:root
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty virgo:nip ;
+                               owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                               owl:onDataRange xsd:string
+                             ] ;
+             rdfs:label "Talent" .
+
+virgo:activityDiagram a owl:Class ;
+    rdfs:label "Activity Diagram" ;
+    rdfs:subClassOf virgo:diagramTeknis .
+
+virgo:adobeIllustrator a owl:Class ;
+    rdfs:label "Adobe Illustrator" ;
+    rdfs:subClassOf virgo:uioruxDesignTools .
+
+virgo:adobePhotoshop a owl:Class ;
+    rdfs:label "Adobe Photoshop" ;
+    rdfs:subClassOf virgo:uioruxDesignTools .
+
+virgo:agileorscrum a owl:Class ;
+    rdfs:label "Agile/Scrum" ;
+    rdfs:subClassOf virgo:prinsipAndMetodologi .
+
+virgo:ajax a owl:Class ;
+    rdfs:label "Ajax" ;
+    rdfs:subClassOf virgo:otherFeLibrary .
+
+virgo:alibabaCloud a owl:Class ;
+    rdfs:label "Alibaba Cloud" ;
+    rdfs:subClassOf virgo:cloudPlatform .
+
+virgo:androidStudio a owl:Class ;
+    rdfs:label "Android Studio" ;
+    rdfs:subClassOf virgo:nativeAndroid .
+
+virgo:androidStudio2 a owl:Class ;
+    rdfs:label "Android Studio" ;
+    rdfs:subClassOf virgo:ideAndEditor .
+
+virgo:angular a owl:Class ;
+    rdfs:label "Angular" ;
+    rdfs:subClassOf virgo:frontendFramework,
+        virgo:typescript .
+
+virgo:antDesign a owl:Class ;
+    rdfs:label "Ant Design" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:apacheDubbo a owl:Class ;
+    rdfs:label "Apache Dubbo" ;
+    rdfs:subClassOf virgo:messageBroker .
+
+virgo:apachePoi a owl:Class ;
+    rdfs:label "Apache POI" ;
+    rdfs:subClassOf virgo:reportGeneration .
+
+virgo:apacheSuperset a owl:Class ;
+    rdfs:label "Apache Superset" ;
+    rdfs:subClassOf virgo:biAndVisualisasi .
+
+virgo:apiContract a owl:Class ;
+    rdfs:label "API Contract" ;
+    rdfs:subClassOf virgo:artefakDokumentasi .
+
+virgo:apollo a owl:Class ;
+    rdfs:label "Apollo" ;
+    rdfs:subClassOf virgo:apiAndProtokol .
+
+virgo:appium a owl:Class ;
+    rdfs:label "Appium" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:artemismq a owl:Class ;
+    rdfs:label "ArtemisMQ" ;
+    rdfs:subClassOf virgo:messageBroker .
+
+virgo:aspnet a owl:Class ;
+    rdfs:label "ASP.NET" ;
+    rdfs:subClassOf virgo:csharp,
+        virgo:netFramework .
+
+virgo:aws a owl:Class ;
+    rdfs:label "AWS" ;
+    rdfs:subClassOf virgo:cloudPlatform .
+
+virgo:axios a owl:Class ;
+    rdfs:label "Axios" ;
+    rdfs:subClassOf virgo:dataFetchingAndForm .
+
+virgo:azureDataStudio a owl:Class ;
+    rdfs:label "Azure Data Studio" ;
+    rdfs:subClassOf virgo:databaseTools .
+
+virgo:balsamiq a owl:Class ;
+    rdfs:label "Balsamiq" ;
+    rdfs:subClassOf virgo:uioruxDesignTools .
+
+virgo:bcrypt a owl:Class ;
+    rdfs:label "Bcrypt" ;
+    rdfs:subClassOf virgo:authAndUtilityFe .
+
+virgo:bdd a owl:Class ;
+    rdfs:label "BDD" ;
+    rdfs:subClassOf virgo:unitAndIntegrationTest .
+
+virgo:bloc a owl:Class ;
+    rdfs:label "BLOC" ;
+    rdfs:subClassOf virgo:mobileArchitectureAndTools .
+
+virgo:bootstrap a owl:Class ;
+    rdfs:label "Bootstrap" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:bpmn a owl:Class ;
+    rdfs:label "BPMN" ;
+    rdfs:subClassOf virgo:pemodelanSistem .
+
+virgo:brd a owl:Class ;
+    rdfs:label "BRD" ;
+    rdfs:subClassOf virgo:artefakDokumentasi .
+
+virgo:bugzilla a owl:Class ;
+    rdfs:label "Bugzilla" ;
+    rdfs:subClassOf virgo:manualTesting .
+
+virgo:bullmq a owl:Class ;
+    rdfs:label "BullMQ" ;
+    rdfs:subClassOf virgo:messageBroker .
+
+virgo:burpSuite a owl:Class ;
+    rdfs:label "Burp Suite" ;
+    rdfs:subClassOf virgo:codeQualityAndSecurity .
+
+virgo:camunda a owl:Class ;
+    rdfs:label "Camunda" ;
+    rdfs:subClassOf virgo:otherBackendFramework .
+
+virgo:canva a owl:Class ;
+    rdfs:label "Canva" ;
+    rdfs:subClassOf virgo:uioruxDesignTools .
+
+virgo:cdm a owl:Class ;
+    rdfs:label "CDM" ;
+    rdfs:subClassOf virgo:diagramTeknis .
+
+virgo:chakraUi a owl:Class ;
+    rdfs:label "Chakra UI" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:classDiagram a owl:Class ;
+    rdfs:label "Class Diagram" ;
+    rdfs:subClassOf virgo:diagramTeknis .
+
+virgo:codeigniter a owl:Class ;
+    rdfs:label "CodeIgniter" ;
+    rdfs:subClassOf virgo:php,
+        virgo:phpFramework .
+
+virgo:confluence a owl:Class ;
+    rdfs:label "Confluence" ;
+    rdfs:subClassOf virgo:projectManagement .
+
+virgo:conjur a owl:Class ;
+    rdfs:label "Conjur" ;
+    rdfs:subClassOf virgo:codeQualityAndSecurity .
+
+virgo:contextApi a owl:Class ;
+    rdfs:label "Context API" ;
+    rdfs:subClassOf virgo:stateManagement .
+
+virgo:cryptojs a owl:Class ;
+    rdfs:label "Crypto.js" ;
+    rdfs:subClassOf virgo:authAndUtilityFe .
+
+virgo:css a owl:Class ;
+    rdfs:label "CSS" ;
+    rdfs:subClassOf virgo:scriptingAndMarkup .
+
+virgo:cucumber a owl:Class ;
+    rdfs:label "Cucumber" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:cypress a owl:Class ;
+    rdfs:label "Cypress" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:d3js a owl:Class ;
+    rdfs:label "D3.js" ;
+    rdfs:subClassOf virgo:javascript,
+        virgo:visualizationAndMap .
+
+virgo:dbdiagram a owl:Class ;
+    rdfs:label "DBDiagram" ;
+    rdfs:subClassOf virgo:databaseTools .
+
+virgo:dbeaver a owl:Class ;
+    rdfs:label "DBeaver" ;
+    rdfs:subClassOf virgo:databaseTools .
+
+virgo:dfd a owl:Class ;
+    rdfs:label "DFD" ;
+    rdfs:subClassOf virgo:diagramTeknis .
+
+virgo:dio a owl:Class ;
+    rdfs:label "Dio" ;
+    rdfs:subClassOf virgo:mobileArchitectureAndTools .
+
+virgo:django a owl:Class ;
+    rdfs:label "Django" ;
+    rdfs:subClassOf virgo:python,
+        virgo:pythonFramework .
+
+virgo:docker a owl:Class ;
+    rdfs:label "Docker" ;
+    rdfs:subClassOf virgo:containerAndOrkestrasi .
+
+virgo:dojoUi a owl:Class ;
+    rdfs:label "Dojo UI" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:drawio a owl:Class ;
+    rdfs:label "Draw.io" ;
+    rdfs:subClassOf virgo:pemodelanSistem .
+
+virgo:eclipse a owl:Class ;
+    rdfs:label "Eclipse" ;
+    rdfs:subClassOf virgo:ideAndEditor .
+
+virgo:elasticjob a owl:Class ;
+    rdfs:label "ElasticJob" ;
+    rdfs:subClassOf virgo:jobScheduler .
+
+virgo:elasticsearch a owl:Class ;
+    rdfs:label "Elasticsearch" ;
+    rdfs:subClassOf virgo:nosqlDatabase .
+
+virgo:electronjs a owl:Class ;
+    rdfs:label "Electron.js" ;
+    rdfs:subClassOf virgo:javascript,
+        virgo:otherBackendFramework .
+
+virgo:elkStack a owl:Class ;
+    rdfs:label "ELK Stack" ;
+    rdfs:subClassOf virgo:observability .
+
+virgo:erd a owl:Class ;
+    rdfs:label "ERD" ;
+    rdfs:subClassOf virgo:diagramTeknis .
+
+virgo:erpnext a owl:Class ;
+    rdfs:label "ERPNext" ;
+    rdfs:subClassOf virgo:otherBackendFramework .
+
+virgo:eslint a owl:Class ;
+    rdfs:label "ESLint" ;
+    rdfs:subClassOf virgo:buildAndDevToolsFe .
+
+virgo:excalidraw a owl:Class ;
+    rdfs:label "Excalidraw" ;
+    rdfs:subClassOf virgo:pemodelanSistem .
+
+virgo:excelize a owl:Class ;
+    rdfs:label "Excelize" ;
+    rdfs:subClassOf virgo:buildUtilityLibrary .
+
+virgo:expo a owl:Class ;
+    rdfs:label "Expo" ;
+    rdfs:subClassOf virgo:otherFeLibrary .
+
+virgo:expressjs a owl:Class ;
+    rdfs:label "Express.js" ;
+    rdfs:subClassOf virgo:javascript,
+        virgo:javascriptRuntimeAndFramework .
+
+virgo:fastapi a owl:Class ;
+    rdfs:label "FastAPI" ;
+    rdfs:subClassOf virgo:python,
+        virgo:pythonFramework .
+
+virgo:figma a owl:Class ;
+    rdfs:label "Figma" ;
+    rdfs:subClassOf virgo:uioruxDesignTools .
+
+virgo:firebase a owl:Class ;
+    rdfs:label "Firebase" ;
+    rdfs:subClassOf virgo:nosqlDatabase .
+
+virgo:flask a owl:Class ;
+    rdfs:label "Flask" ;
+    rdfs:subClassOf virgo:python,
+        virgo:pythonFramework .
+
+virgo:flowchart a owl:Class ;
+    rdfs:label "Flowchart" ;
+    rdfs:subClassOf virgo:diagramTeknis .
+
+virgo:flutter a owl:Class ;
+    rdfs:label "Flutter" ;
+    rdfs:subClassOf virgo:crossplatformMobile,
+        virgo:dart .
+
+virgo:formik a owl:Class ;
+    rdfs:label "Formik" ;
+    rdfs:subClassOf virgo:dataFetchingAndForm .
+
+virgo:frappe a owl:Class ;
+    rdfs:label "Frappe" ;
+    rdfs:subClassOf virgo:otherBackendFramework .
+
+virgo:fsd a owl:Class ;
+    rdfs:label "FSD" ;
+    rdfs:subClassOf virgo:artefakDokumentasi .
+
+virgo:ftp a owl:Class ;
+    rdfs:label "FTP" ;
+    rdfs:subClassOf virgo:fileTransfer .
+
+virgo:gcp a owl:Class ;
+    rdfs:label "GCP" ;
+    rdfs:subClassOf virgo:cloudPlatform .
+
+virgo:geminiorgpt a owl:Class ;
+    rdfs:label "Gemini/GPT" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:geopandas a owl:Class ;
+    rdfs:label "GeoPandas" ;
+    rdfs:subClassOf virgo:gisLibrary .
+
+virgo:geoserver a owl:Class ;
+    rdfs:label "GeoServer" ;
+    rdfs:subClassOf virgo:gisPlatform .
+
+virgo:getit a owl:Class ;
+    rdfs:label "GetIt" ;
+    rdfs:subClassOf virgo:mobileArchitectureAndTools .
+
+virgo:gin a owl:Class ;
+    rdfs:label "Gin" ;
+    rdfs:subClassOf virgo:goFramework,
+        virgo:golang .
+
+virgo:git a owl:Class ;
+    rdfs:label "Git" ;
+    rdfs:subClassOf virgo:versionControl .
+
+virgo:githubActions a owl:Class ;
+    rdfs:label "GitHub Actions" ;
+    rdfs:subClassOf virgo:ciorcd .
+
+virgo:gitlabCi a owl:Class ;
+    rdfs:label "GitLab CI" ;
+    rdfs:subClassOf virgo:ciorcd .
+
+virgo:goFiber a owl:Class ;
+    rdfs:label "Go Fiber" ;
+    rdfs:subClassOf virgo:goFramework,
+        virgo:golang .
+
+virgo:googleBigquery a owl:Class ;
+    rdfs:label "Google BigQuery" ;
+    rdfs:subClassOf virgo:biAndVisualisasi .
+
+virgo:googleCalendarApi a owl:Class ;
+    rdfs:label "Google Calendar API" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:googleDocs a owl:Class ;
+    rdfs:label "Google Docs" ;
+    rdfs:subClassOf virgo:officeAndDokumen .
+
+virgo:googleEarthEngine a owl:Class ;
+    rdfs:label "Google Earth Engine" ;
+    rdfs:subClassOf virgo:gisPlatform .
+
+virgo:googleSheets a owl:Class ;
+    rdfs:label "Google Sheets" ;
+    rdfs:subClassOf virgo:officeAndDokumen .
+
+virgo:gorm a owl:Class ;
+    rdfs:label "GORM" ;
+    rdfs:subClassOf virgo:ormAndMigration .
+
+virgo:gorouter a owl:Class ;
+    rdfs:label "GoRouter" ;
+    rdfs:subClassOf virgo:mobileArchitectureAndTools .
+
+virgo:graphql a owl:Class ;
+    rdfs:label "GraphQL" ;
+    rdfs:subClassOf virgo:apiAndProtokol .
+
+virgo:grpc a owl:Class ;
+    rdfs:label "gRPC" ;
+    rdfs:subClassOf virgo:apiAndProtokol .
+
+virgo:gulpjs a owl:Class ;
+    rdfs:label "Gulp.js" ;
+    rdfs:subClassOf virgo:buildAndDevToolsFe,
+        virgo:javascript .
+
+virgo:handlebars a owl:Class ;
+    rdfs:label "Handlebars" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:harbor a owl:Class ;
+    rdfs:label "Harbor" ;
+    rdfs:subClassOf virgo:artifactRepository .
+
+virgo:hibernate a owl:Class ;
+    rdfs:label "Hibernate" ;
+    rdfs:subClassOf virgo:ormAndMigration .
+
+virgo:hl7 a owl:Class ;
+    rdfs:label "HL7" ;
+    rdfs:subClassOf virgo:apiAndProtokol .
+
+virgo:html a owl:Class ;
+    rdfs:label "HTML" ;
+    rdfs:subClassOf virgo:scriptingAndMarkup .
+
+virgo:husky a owl:Class ;
+    rdfs:label "Husky" ;
+    rdfs:subClassOf virgo:buildAndDevToolsFe .
+
+virgo:i18n a owl:Class ;
+    rdfs:label "i18n" ;
+    rdfs:subClassOf virgo:authAndUtilityFe .
+
+virgo:iis a owl:Class ;
+    rdfs:label "IIS" ;
+    rdfs:subClassOf virgo:webServerAndGateway .
+
+virgo:iis2 a owl:Class ;
+    rdfs:label "IIS" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:inertiajs a owl:Class ;
+    rdfs:label "Inertia.js" ;
+    rdfs:subClassOf virgo:microfrontend .
+
+virgo:intellijIdea a owl:Class ;
+    rdfs:label "IntelliJ IDEA" ;
+    rdfs:subClassOf virgo:ideAndEditor .
+
+virgo:interactjs a owl:Class ;
+    rdfs:label "InteractJS" ;
+    rdfs:subClassOf virgo:otherFeLibrary .
+
+virgo:iona a owl:Class ;
+    rdfs:label "IONA" ;
+    rdfs:subClassOf virgo:apiAndProtokol .
+
+virgo:jackson a owl:Class ;
+    rdfs:label "Jackson" ;
+    rdfs:subClassOf virgo:buildUtilityLibrary .
+
+virgo:jaeger a owl:Class ;
+    rdfs:label "Jaeger" ;
+    rdfs:subClassOf virgo:observability .
+
+virgo:jasperReport a owl:Class ;
+    rdfs:label "Jasper Report" ;
+    rdfs:subClassOf virgo:reportGeneration .
+
+virgo:javaQuarkus a owl:Class ;
+    rdfs:label "Java Quarkus" ;
+    rdfs:subClassOf virgo:java,
+        virgo:jvmFramework .
+
+virgo:javaSwing a owl:Class ;
+    rdfs:label "Java Swing" ;
+    rdfs:subClassOf virgo:java,
+        virgo:jvmFramework .
+
+virgo:javalang a owl:Class ;
+    rdfs:label "Javalang" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:jdepend a owl:Class ;
+    rdfs:label "JDepend" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:jenkins a owl:Class ;
+    rdfs:label "Jenkins" ;
+    rdfs:subClassOf virgo:ciorcd .
+
+virgo:jest a owl:Class ;
+    rdfs:label "Jest" ;
+    rdfs:subClassOf virgo:unitAndIntegrationTest .
+
+virgo:jetpackCompose a owl:Class ;
+    rdfs:label "Jetpack Compose" ;
+    rdfs:subClassOf virgo:kotlin,
+        virgo:nativeAndroid .
+
+virgo:jira a owl:Class ;
+    rdfs:label "JIRA" ;
+    rdfs:subClassOf virgo:projectManagement .
+
+virgo:jitsi a owl:Class ;
+    rdfs:label "Jitsi" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:jmeter a owl:Class ;
+    rdfs:label "JMeter" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:joi a owl:Class ;
+    rdfs:label "Joi" ;
+    rdfs:subClassOf virgo:dataFetchingAndForm .
+
+virgo:jparser a owl:Class ;
+    rdfs:label "JParser" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:jquery a owl:Class ;
+    rdfs:label "jQuery" ;
+    rdfs:subClassOf virgo:javascript,
+        virgo:otherFeLibrary .
+
+virgo:jsp a owl:Class ;
+    rdfs:label "JSP" ;
+    rdfs:subClassOf virgo:otherBackendFramework .
+
+virgo:jumpserver a owl:Class ;
+    rdfs:label "Jumpserver" ;
+    rdfs:subClassOf virgo:remoteAndOsTools .
+
+virgo:junit a owl:Class ;
+    rdfs:label "JUnit" ;
+    rdfs:subClassOf virgo:unitAndIntegrationTest .
+
+virgo:jwt a owl:Class ;
+    rdfs:label "JWT" ;
+    rdfs:subClassOf virgo:authAndUtilityFe .
+
+virgo:kafka a owl:Class ;
+    rdfs:label "Kafka" ;
+    rdfs:subClassOf virgo:messageBroker .
+
+virgo:katalonStudio a owl:Class ;
+    rdfs:label "Katalon Studio" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:kendoUi a owl:Class ;
+    rdfs:label "Kendo UI" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:kibana a owl:Class ;
+    rdfs:label "Kibana" ;
+    rdfs:subClassOf virgo:observability .
+
+virgo:kibana2 a owl:Class ;
+    rdfs:label "Kibana" ;
+    rdfs:subClassOf virgo:biAndVisualisasi .
+
+virgo:kubernetes a owl:Class ;
+    rdfs:label "Kubernetes" ;
+    rdfs:subClassOf virgo:containerAndOrkestrasi .
+
+virgo:laravel a owl:Class ;
+    rdfs:label "Laravel" ;
+    rdfs:subClassOf virgo:php,
+        virgo:phpFramework .
+
+virgo:ldap a owl:Class ;
+    rdfs:label "LDAP" ;
+    rdfs:subClassOf virgo:authAndDirectory .
+
+virgo:leaflet a owl:Class ;
+    rdfs:label "Leaflet" ;
+    rdfs:subClassOf virgo:visualizationAndMap .
+
+virgo:leaflet2 a owl:Class ;
+    rdfs:label "Leaflet" ;
+    rdfs:subClassOf virgo:gisLibrary .
+
+virgo:liquibase a owl:Class ;
+    rdfs:label "Liquibase" ;
+    rdfs:subClassOf virgo:ormAndMigration .
+
+virgo:lombok a owl:Class ;
+    rdfs:label "Lombok" ;
+    rdfs:subClassOf virgo:buildUtilityLibrary .
+
+virgo:lookerStudio a owl:Class ;
+    rdfs:label "Looker Studio" ;
+    rdfs:subClassOf virgo:biAndVisualisasi .
+
+virgo:mantis a owl:Class ;
+    rdfs:label "Mantis" ;
+    rdfs:subClassOf virgo:manualTesting .
+
+virgo:mariadb a owl:Class ;
+    rdfs:label "MariaDB" ;
+    rdfs:subClassOf virgo:relationalDatabase .
+
+virgo:materialUi a owl:Class ;
+    rdfs:label "Material UI" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:maven a owl:Class ;
+    rdfs:label "Maven" ;
+    rdfs:subClassOf virgo:buildUtilityLibrary .
+
+virgo:microservice a owl:Class ;
+    rdfs:label "Microservice" ;
+    rdfs:subClassOf virgo:prinsipAndMetodologi .
+
+virgo:minio a owl:Class ;
+    rdfs:label "MinIO" ;
+    rdfs:subClassOf virgo:objectStorage .
+
+virgo:miro a owl:Class ;
+    rdfs:label "Miro" ;
+    rdfs:subClassOf virgo:uioruxDesignTools .
+
+virgo:mobaxterm a owl:Class ;
+    rdfs:label "MobaXterm" ;
+    rdfs:subClassOf virgo:remoteAndOsTools .
+
+virgo:mockito a owl:Class ;
+    rdfs:label "Mockito" ;
+    rdfs:subClassOf virgo:unitAndIntegrationTest .
+
+virgo:modelmapper a owl:Class ;
+    rdfs:label "Modelmapper" ;
+    rdfs:subClassOf virgo:buildUtilityLibrary .
+
+virgo:mongodb a owl:Class ;
+    rdfs:label "MongoDB" ;
+    rdfs:subClassOf virgo:nosqlDatabase .
+
+virgo:mongodbcompass a owl:Class ;
+    rdfs:label "MongoDBCompass" ;
+    rdfs:subClassOf virgo:databaseTools .
+
+virgo:monorepo a owl:Class ;
+    rdfs:label "Monorepo" ;
+    rdfs:subClassOf virgo:buildAndDevToolsFe .
+
+virgo:moodle a owl:Class ;
+    rdfs:label "Moodle" ;
+    rdfs:subClassOf virgo:remoteAndOsTools .
+
+virgo:mqtt a owl:Class ;
+    rdfs:label "MQTT" ;
+    rdfs:subClassOf virgo:messageBroker .
+
+virgo:multer a owl:Class ;
+    rdfs:label "Multer" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:mvc a owl:Class ;
+    rdfs:label "MVC" ;
+    rdfs:subClassOf virgo:prinsipAndMetodologi .
+
+virgo:mybatis a owl:Class ;
+    rdfs:label "MyBatis" ;
+    rdfs:subClassOf virgo:ormAndMigration .
+
+virgo:mysql a owl:Class ;
+    rdfs:label "MySQL" ;
+    rdfs:subClassOf virgo:relationalDatabase .
+
+virgo:n8n a owl:Class ;
+    rdfs:label "N8N" ;
+    rdfs:subClassOf virgo:workflowOtomasi .
+
+virgo:navicat a owl:Class ;
+    rdfs:label "Navicat" ;
+    rdfs:subClassOf virgo:databaseTools .
+
+virgo:nestjs a owl:Class ;
+    rdfs:label "Nest.js" ;
+    rdfs:subClassOf virgo:javascriptRuntimeAndFramework,
+        virgo:typescript .
+
+virgo:net a owl:Class ;
+    rdfs:label ".NET" ;
+    rdfs:subClassOf virgo:csharp,
+        virgo:netFramework .
+
+virgo:nextjs a owl:Class ;
+    rdfs:label "Next.js" ;
+    rdfs:subClassOf virgo:frontendFramework,
+        virgo:javascript .
+
+virgo:nexus a owl:Class ;
+    rdfs:label "Nexus" ;
+    rdfs:subClassOf virgo:artifactRepository .
+
+virgo:nginx a owl:Class ;
+    rdfs:label "Nginx" ;
+    rdfs:subClassOf virgo:webServerAndGateway .
+
+virgo:nightwatch a owl:Class ;
+    rdfs:label "Nightwatch" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:nodejs a owl:Class ;
+    rdfs:label "Node.js" ;
+    rdfs:subClassOf virgo:javascript,
+        virgo:javascriptRuntimeAndFramework .
+
+virgo:nodemailer a owl:Class ;
+    rdfs:label "Nodemailer" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:notepadplusplus a owl:Class ;
+    rdfs:label "Notepad++" ;
+    rdfs:subClassOf virgo:officeAndDokumen .
+
+virgo:okd a owl:Class ;
+    rdfs:label "OKD" ;
+    rdfs:subClassOf virgo:containerAndOrkestrasi .
+
+virgo:oop a owl:Class ;
+    rdfs:label "OOP" ;
+    rdfs:subClassOf virgo:prinsipAndMetodologi .
+
+virgo:openlayers a owl:Class ;
+    rdfs:label "OpenLayers" ;
+    rdfs:subClassOf virgo:visualizationAndMap .
+
+virgo:openlayers2 a owl:Class ;
+    rdfs:label "OpenLayers" ;
+    rdfs:subClassOf virgo:gisLibrary .
+
+virgo:openshift a owl:Class ;
+    rdfs:label "OpenShift" ;
+    rdfs:subClassOf virgo:containerAndOrkestrasi .
+
+virgo:oracleDb a owl:Class ;
+    rdfs:label "Oracle DB" ;
+    rdfs:subClassOf virgo:relationalDatabase .
+
+virgo:outsystems a owl:Class ;
+    rdfs:label "OutSystems" ;
+    rdfs:subClassOf virgo:lowcodeOrNocodeAndRpa .
+
+virgo:owaspZap a owl:Class ;
+    rdfs:label "OWASP ZAP" ;
+    rdfs:subClassOf virgo:codeQualityAndSecurity .
+
+virgo:pandas a owl:Class ;
+    rdfs:label "Pandas" ;
+    rdfs:subClassOf virgo:dataProcessing .
+
+virgo:pgAdmin a owl:Class ;
+    rdfs:label "PG Admin" ;
+    rdfs:subClassOf virgo:databaseTools .
+
+virgo:phpNative a owl:Class ;
+    rdfs:label "PHP Native" ;
+    rdfs:subClassOf virgo:php,
+        virgo:phpFramework .
+
+virgo:phpmyadmin a owl:Class ;
+    rdfs:label "PHPMyAdmin" ;
+    rdfs:subClassOf virgo:databaseTools .
+
+virgo:pinia a owl:Class ;
+    rdfs:label "Pinia" ;
+    rdfs:subClassOf virgo:stateManagement .
+
+virgo:plantuml a owl:Class ;
+    rdfs:label "PlantUML" ;
+    rdfs:subClassOf virgo:pemodelanSistem .
+
+virgo:postgis a owl:Class ;
+    rdfs:label "PostGIS" ;
+    rdfs:subClassOf virgo:ormAndMigration .
+
+virgo:postgis2 a owl:Class ;
+    rdfs:label "PostGIS" ;
+    rdfs:subClassOf virgo:gisPlatform .
+
+virgo:postgresql a owl:Class ;
+    rdfs:label "PostgreSQL" ;
+    rdfs:subClassOf virgo:relationalDatabase .
+
+virgo:postman a owl:Class ;
+    rdfs:label "Postman" ;
+    rdfs:subClassOf virgo:apiTestingTools .
+
+virgo:powerApps a owl:Class ;
+    rdfs:label "Power Apps" ;
+    rdfs:subClassOf virgo:lowcodeOrNocodeAndRpa .
+
+virgo:powerAutomate a owl:Class ;
+    rdfs:label "Power Automate" ;
+    rdfs:subClassOf virgo:lowcodeOrNocodeAndRpa .
+
+virgo:powerDesigner a owl:Class ;
+    rdfs:label "Power Designer" ;
+    rdfs:subClassOf virgo:pemodelanSistem .
+
+virgo:prettier a owl:Class ;
+    rdfs:label "Prettier" ;
+    rdfs:subClassOf virgo:buildAndDevToolsFe .
+
+virgo:primeng a owl:Class ;
+    rdfs:label "PrimeNG" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:prisma a owl:Class ;
+    rdfs:label "Prisma" ;
+    rdfs:subClassOf virgo:ormAndMigration .
+
+virgo:protobuf a owl:Class ;
+    rdfs:label "Protobuf" ;
+    rdfs:subClassOf virgo:apiAndProtokol .
+
+virgo:pygit2 a owl:Class ;
+    rdfs:label "PyGit2" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:pyspark a owl:Class ;
+    rdfs:label "PySpark" ;
+    rdfs:subClassOf virgo:dataProcessing .
+
+virgo:qaAutomation a owl:Class ;
+    rdfs:label "QA Automation" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:qaManual a owl:Class ;
+    rdfs:label "QA Manual" ;
+    rdfs:subClassOf virgo:manualTesting .
+
+virgo:qgis a owl:Class ;
+    rdfs:label "QGIS" ;
+    rdfs:subClassOf virgo:gisPlatform .
+
+virgo:qodana a owl:Class ;
+    rdfs:label "Qodana" ;
+    rdfs:subClassOf virgo:buildAndDevToolsFe .
+
+virgo:rabbitmq a owl:Class ;
+    rdfs:label "RabbitMQ" ;
+    rdfs:subClassOf virgo:messageBroker .
+
+virgo:radixUi a owl:Class ;
+    rdfs:label "Radix UI" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:reactHookForm a owl:Class ;
+    rdfs:label "React Hook Form" ;
+    rdfs:subClassOf virgo:dataFetchingAndForm .
+
+virgo:reactNative a owl:Class ;
+    rdfs:label "React Native" ;
+    rdfs:subClassOf virgo:crossplatformMobile .
+
+virgo:reactjs a owl:Class ;
+    rdfs:label "React.js" ;
+    rdfs:subClassOf virgo:frontendFramework,
+        virgo:javascript .
+
+virgo:redis a owl:Class ;
+    rdfs:label "Redis" ;
+    rdfs:subClassOf virgo:nosqlDatabase .
+
+virgo:redux a owl:Class ;
+    rdfs:label "Redux" ;
+    rdfs:subClassOf virgo:stateManagement .
+
+virgo:restApi a owl:Class ;
+    rdfs:label "REST API" ;
+    rdfs:subClassOf virgo:apiAndProtokol .
+
+virgo:rsuite a owl:Class ;
+    rdfs:label "RSuite" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:rubyOnRails a owl:Class ;
+    rdfs:label "Ruby on Rails" ;
+    rdfs:subClassOf virgo:otherBackendFramework,
+        virgo:ruby .
+
+virgo:scripting a owl:Class ;
+    rdfs:label "Scripting" ;
+    rdfs:subClassOf virgo:scriptingAndMarkup .
+
+virgo:sdd a owl:Class ;
+    rdfs:label "SDD" ;
+    rdfs:subClassOf virgo:artefakDokumentasi .
+
+virgo:selenium a owl:Class ;
+    rdfs:label "Selenium" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:sequelize a owl:Class ;
+    rdfs:label "Sequelize" ;
+    rdfs:subClassOf virgo:ormAndMigration .
+
+virgo:sequenceDiagram a owl:Class ;
+    rdfs:label "Sequence Diagram" ;
+    rdfs:subClassOf virgo:diagramTeknis .
+
+virgo:serviceStudio a owl:Class ;
+    rdfs:label "Service Studio" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:shadcnorui a owl:Class ;
+    rdfs:label "Shadcn/UI" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:sharedPreferences a owl:Class ;
+    rdfs:label "Shared Preferences" ;
+    rdfs:subClassOf virgo:mobileArchitectureAndTools .
+
+virgo:shp a owl:Class ;
+    rdfs:label "SHP" ;
+    rdfs:subClassOf virgo:gisLibrary .
+
+virgo:singleSpa a owl:Class ;
+    rdfs:label "Single SPA" ;
+    rdfs:subClassOf virgo:microfrontend .
+
+virgo:sit a owl:Class ;
+    rdfs:label "SIT" ;
+    rdfs:subClassOf virgo:manualTesting .
+
+virgo:smartsheet a owl:Class ;
+    rdfs:label "Smartsheet" ;
+    rdfs:subClassOf virgo:projectManagement .
+
+virgo:snowflake a owl:Class ;
+    rdfs:label "Snowflake" ;
+    rdfs:subClassOf virgo:relationalDatabase .
+
+virgo:snowflake2 a owl:Class ;
+    rdfs:label "Snowflake" ;
+    rdfs:subClassOf virgo:biAndVisualisasi .
+
+virgo:solace a owl:Class ;
+    rdfs:label "Solace" ;
+    rdfs:subClassOf virgo:messageBroker .
+
+virgo:solidPrinciple a owl:Class ;
+    rdfs:label "SOLID Principle" ;
+    rdfs:subClassOf virgo:prinsipAndMetodologi .
+
+virgo:sonarqube a owl:Class ;
+    rdfs:label "SonarQube" ;
+    rdfs:subClassOf virgo:buildAndDevToolsFe .
+
+virgo:spiredoc a owl:Class ;
+    rdfs:label "Spire.Doc" ;
+    rdfs:subClassOf virgo:reportGeneration .
+
+virgo:springBoot a owl:Class ;
+    rdfs:label "Spring Boot" ;
+    rdfs:subClassOf virgo:java,
+        virgo:jvmFramework .
+
+virgo:sql a owl:Class ;
+    rdfs:label "SQL" ;
+    rdfs:subClassOf virgo:scriptingAndMarkup .
+
+virgo:sqlDeveloper a owl:Class ;
+    rdfs:label "SQL Developer" ;
+    rdfs:subClassOf virgo:databaseTools .
+
+virgo:sqlServer a owl:Class ;
+    rdfs:label "SQL Server" ;
+    rdfs:subClassOf virgo:relationalDatabase .
+
+virgo:sqlalchemy a owl:Class ;
+    rdfs:label "SQLAlchemy" ;
+    rdfs:subClassOf virgo:ormAndMigration .
+
+virgo:sqlalchemy2 a owl:Class ;
+    rdfs:label "SQLAlchemy" ;
+    rdfs:subClassOf virgo:dataProcessing .
+
+virgo:srs a owl:Class ;
+    rdfs:label "SRS" ;
+    rdfs:subClassOf virgo:artefakDokumentasi .
+
+virgo:ssis a owl:Class ;
+    rdfs:label "SSIS" ;
+    rdfs:subClassOf virgo:biAndVisualisasi .
+
+virgo:sso a owl:Class ;
+    rdfs:label "SSO" ;
+    rdfs:subClassOf virgo:authAndDirectory .
+
+virgo:stacked a owl:Class ;
+    rdfs:label "Stacked" ;
+    rdfs:subClassOf virgo:mobileArchitectureAndTools .
+
+virgo:statisticsToolbox a owl:Class ;
+    rdfs:label "Statistics Toolbox" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:struts a owl:Class ;
+    rdfs:label "Struts" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:swagger a owl:Class ;
+    rdfs:label "Swagger" ;
+    rdfs:subClassOf virgo:apiDocumentation .
+
+virgo:syncfusion a owl:Class ;
+    rdfs:label "Syncfusion" ;
+    rdfs:subClassOf virgo:reportGeneration .
+
+virgo:tad a owl:Class ;
+    rdfs:label "TAD" ;
+    rdfs:subClassOf virgo:artefakDokumentasi .
+
+virgo:tailwindCss a owl:Class ;
+    rdfs:label "Tailwind CSS" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:talend a owl:Class ;
+    rdfs:label "Talend" ;
+    rdfs:subClassOf virgo:biAndVisualisasi .
+
+virgo:tanstackQuery a owl:Class ;
+    rdfs:label "TanStack Query" ;
+    rdfs:subClassOf virgo:dataFetchingAndForm .
+
+virgo:technicalWriter a owl:Class ;
+    rdfs:label "Technical Writer" ;
+    rdfs:subClassOf virgo:officeAndDokumen .
+
+virgo:testrail a owl:Class ;
+    rdfs:label "TestRail" ;
+    rdfs:subClassOf virgo:manualTesting .
+
+virgo:tibero a owl:Class ;
+    rdfs:label "Tibero" ;
+    rdfs:subClassOf virgo:relationalDatabase .
+
+virgo:tiptap a owl:Class ;
+    rdfs:label "Tiptap" ;
+    rdfs:subClassOf virgo:visualizationAndMap .
+
+virgo:trello a owl:Class ;
+    rdfs:label "Trello" ;
+    rdfs:subClassOf virgo:projectManagement .
+
+virgo:trivy a owl:Class ;
+    rdfs:label "Trivy" ;
+    rdfs:subClassOf virgo:codeQualityAndSecurity .
+
+virgo:tsd a owl:Class ;
+    rdfs:label "TSD" ;
+    rdfs:subClassOf virgo:artefakDokumentasi .
+
+virgo:uat a owl:Class ;
+    rdfs:label "UAT" ;
+    rdfs:subClassOf virgo:manualTesting .
+
+virgo:ubuntu a owl:Class ;
+    rdfs:label "Ubuntu" ;
+    rdfs:subClassOf virgo:remoteAndOsTools .
+
+virgo:uiorux a owl:Class ;
+    rdfs:label "UI/UX" ;
+    rdfs:subClassOf virgo:uioruxDesignTools .
+
+virgo:uipath\(rpa\) a owl:Class ;
+    rdfs:label "UIPath (RPA)" ;
+    rdfs:subClassOf virgo:lowcodeOrNocodeAndRpa .
+
+virgo:uml a owl:Class ;
+    rdfs:label "UML" ;
+    rdfs:subClassOf virgo:pemodelanSistem .
+
+virgo:useCaseDiagram a owl:Class ;
+    rdfs:label "Use Case Diagram" ;
+    rdfs:subClassOf virgo:diagramTeknis .
+
+virgo:userStory a owl:Class ;
+    rdfs:label "User Story" ;
+    rdfs:subClassOf virgo:artefakDokumentasi .
+
+virgo:vbnet a owl:Class ;
+    rdfs:label "VB.NET" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:vbscript a owl:Class ;
+    rdfs:label "VBScript" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:vercel a owl:Class ;
+    rdfs:label "Vercel" ;
+    rdfs:subClassOf virgo:otherFeLibrary .
+
+virgo:visualStudioCode a owl:Class ;
+    rdfs:label "Visual Studio Code" ;
+    rdfs:subClassOf virgo:ideAndEditor .
+
+virgo:vite a owl:Class ;
+    rdfs:label "Vite" ;
+    rdfs:subClassOf virgo:buildAndDevToolsFe .
+
+virgo:vmorserver a owl:Class ;
+    rdfs:label "VM/Server" ;
+    rdfs:subClassOf virgo:remoteAndOsTools .
+
+virgo:vpn a owl:Class ;
+    rdfs:label "VPN" ;
+    rdfs:subClassOf virgo:remoteAndOsTools .
+
+virgo:vuejs a owl:Class ;
+    rdfs:label "Vue.js" ;
+    rdfs:subClassOf virgo:frontendFramework,
+        virgo:javascript .
+
+virgo:vuetify a owl:Class ;
+    rdfs:label "Vuetify" ;
+    rdfs:subClassOf virgo:uiComponentLibrary .
+
+virgo:wdio a owl:Class ;
+    rdfs:label "Wdio" ;
+    rdfs:subClassOf virgo:testAutomation .
+
+virgo:web3js a owl:Class ;
+    rdfs:label "Web3.js" ;
+    rdfs:subClassOf virgo:buildUtilityLibrary .
+
+virgo:websocket a owl:Class ;
+    rdfs:label "WebSocket" ;
+    rdfs:subClassOf virgo:apiAndProtokol .
+
+virgo:xampp a owl:Class ;
+    rdfs:label "XAMPP" ;
+    rdfs:subClassOf virgo:specializedTools .
+
+virgo:xray a owl:Class ;
+    rdfs:label "Xray" ;
+    rdfs:subClassOf virgo:manualTesting .
+
+virgo:yii a owl:Class ;
+    rdfs:label "Yii" ;
+    rdfs:subClassOf virgo:php,
+        virgo:phpFramework .
+
+virgo:yup a owl:Class ;
+    rdfs:label "Yup" ;
+    rdfs:subClassOf virgo:dataFetchingAndForm .
+
+virgo:zeplin a owl:Class ;
+    rdfs:label "Zeplin" ;
+    rdfs:subClassOf virgo:uioruxDesignTools .
+
+virgo:zod a owl:Class ;
+    rdfs:label "ZOD" ;
+    rdfs:subClassOf virgo:dataFetchingAndForm .
+
+virgo:zookeeper a owl:Class ;
+    rdfs:label "Zookeeper" ;
+    rdfs:subClassOf virgo:jobScheduler .
+
+virgo:zoom a owl:Class ;
+    rdfs:label "Zoom" ;
+    rdfs:subClassOf virgo:projectManagement .
+
+virgo:zustand a owl:Class ;
+    rdfs:label "Zustand" ;
+    rdfs:subClassOf virgo:stateManagement .
+
+virgo:apiDocumentation a owl:Class ;
+    rdfs:label "API Documentation" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:apiTestingTools a owl:Class ;
+    rdfs:label "API Testing Tools" ;
+    rdfs:subClassOf virgo:qualityAssurance .
+
+virgo:dart a owl:Class ;
+    rdfs:label "Dart" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:fileTransfer a owl:Class ;
+    rdfs:label "File Transfer" ;
+    rdfs:subClassOf virgo:messagingAndIntegrasi .
+
+virgo:kotlin a owl:Class ;
+    rdfs:label "Kotlin" ;
+    rdfs:subClassOf virgo:nativeAndroid .
+
+virgo:objectStorage a owl:Class ;
+    rdfs:label "Object Storage" ;
+    rdfs:subClassOf virgo:databaseAndStorage .
+
+virgo:ruby a owl:Class ;
+    rdfs:label "Ruby" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:versionControl a owl:Class ;
+    rdfs:label "Version Control" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:workflowOtomasi a owl:Class ;
+    rdfs:label "Workflow Otomasi" ;
+    rdfs:subClassOf virgo:dataAndAnalitik .
+
+virgo:artifactRepository a owl:Class ;
+    rdfs:label "Artifact Repository" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:authAndDirectory a owl:Class ;
+    rdfs:label "Auth & Directory" ;
+    rdfs:subClassOf virgo:messagingAndIntegrasi .
+
+virgo:bahasaPemrograman a owl:Class ;
+    rdfs:label "Bahasa Pemrograman" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:crossplatformMobile a owl:Class ;
+    rdfs:label "Cross-Platform Mobile" ;
+    rdfs:subClassOf virgo:mobileDevelopment .
+
+virgo:csharp a owl:Class ;
+    rdfs:label "C#" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:gisAndGeospasial a owl:Class ;
+    rdfs:label "GIS & Geospasial" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:goFramework a owl:Class ;
+    rdfs:label "Go Framework" ;
+    rdfs:subClassOf virgo:backendDevelopment .
+
+virgo:golang a owl:Class ;
+    rdfs:label "Golang" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:jobScheduler a owl:Class ;
+    rdfs:label "Job Scheduler" ;
+    rdfs:subClassOf virgo:messagingAndIntegrasi .
+
+virgo:microfrontend a owl:Class ;
+    rdfs:label "Microfrontend" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:netFramework a owl:Class ;
+    rdfs:label ".NET Framework" ;
+    rdfs:subClassOf virgo:backendDevelopment .
+
+virgo:typescript a owl:Class ;
+    rdfs:label "TypeScript" ;
+    rdfs:subClassOf virgo:scriptingAndMarkup .
+
+virgo:webServerAndGateway a owl:Class ;
+    rdfs:label "Web Server & Gateway" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:ciorcd a owl:Class ;
+    rdfs:label "CI/CD" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:cloudPlatform a owl:Class ;
+    rdfs:label "Cloud Platform" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:dataAndAnalitik a owl:Class ;
+    rdfs:label "Data & Analitik" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:dataProcessing a owl:Class ;
+    rdfs:label "Data Processing" ;
+    rdfs:subClassOf virgo:dataAndAnalitik .
+
+virgo:java a owl:Class ;
+    rdfs:label "Java" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:javascriptRuntimeAndFramework a owl:Class ;
+    rdfs:label "JavaScript Runtime & Framework" ;
+    rdfs:subClassOf virgo:backendDevelopment .
+
+virgo:jvmFramework a owl:Class ;
+    rdfs:label "JVM Framework" ;
+    rdfs:subClassOf virgo:backendDevelopment .
+
+virgo:mobileDevelopment a owl:Class ;
+    rdfs:label "Mobile Development" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:nativeAndroid a owl:Class ;
+    rdfs:label "Native Android" ;
+    rdfs:subClassOf virgo:mobileDevelopment .
+
+virgo:observability a owl:Class ;
+    rdfs:label "Observability" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:python a owl:Class ;
+    rdfs:label "Python" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:pythonFramework a owl:Class ;
+    rdfs:label "Python Framework" ;
+    rdfs:subClassOf virgo:backendDevelopment .
+
+virgo:analisisAndDokumentasiBisnis a owl:Class ;
+    rdfs:label "Analisis & Dokumentasi Bisnis" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:authAndUtilityFe a owl:Class ;
+    rdfs:label "Auth & Utility FE" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:codeQualityAndSecurity a owl:Class ;
+    rdfs:label "Code Quality & Security" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:containerAndOrkestrasi a owl:Class ;
+    rdfs:label "Container & Orkestrasi" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:desainAndKolaborasi a owl:Class ;
+    rdfs:label "Desain & Kolaborasi" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:frontendFramework a owl:Class ;
+    rdfs:label "Frontend Framework" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:gisLibrary a owl:Class ;
+    rdfs:label "GIS Library" ;
+    rdfs:subClassOf virgo:gisAndGeospasial .
+
+virgo:gisPlatform a owl:Class ;
+    rdfs:label "GIS Platform" ;
+    rdfs:subClassOf virgo:gisAndGeospasial .
+
+virgo:ideAndEditor a owl:Class ;
+    rdfs:label "IDE & Editor" ;
+    rdfs:subClassOf virgo:desainAndKolaborasi .
+
+virgo:lowcodeOrNocodeAndRpa a owl:Class ;
+    rdfs:label "Low-Code / No-Code & RPA" ;
+    rdfs:subClassOf virgo:platformAndToolsKhusus .
+
+virgo:nosqlDatabase a owl:Class ;
+    rdfs:label "NoSQL Database" ;
+    rdfs:subClassOf virgo:databaseAndStorage .
+
+virgo:officeAndDokumen a owl:Class ;
+    rdfs:label "Office & Dokumen" ;
+    rdfs:subClassOf virgo:desainAndKolaborasi .
+
+virgo:php a owl:Class ;
+    rdfs:label "PHP" ;
+    rdfs:subClassOf virgo:backendLanguage .
+
+virgo:phpFramework a owl:Class ;
+    rdfs:label "PHP Framework" ;
+    rdfs:subClassOf virgo:backendDevelopment .
+
+virgo:platformAndToolsKhusus a owl:Class ;
+    rdfs:label "Platform & Tools Khusus" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:qualityAssurance a owl:Class ;
+    rdfs:label "Quality Assurance" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:reportGeneration a owl:Class ;
+    rdfs:label "Report Generation" ;
+    rdfs:subClassOf virgo:platformAndToolsKhusus .
+
+virgo:stateManagement a owl:Class ;
+    rdfs:label "State Management" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:unitAndIntegrationTest a owl:Class ;
+    rdfs:label "Unit & Integration Test" ;
+    rdfs:subClassOf virgo:qualityAssurance .
+
+virgo:visualizationAndMap a owl:Class ;
+    rdfs:label "Visualization & Map" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:databaseAndStorage a owl:Class ;
+    rdfs:label "Database & Storage" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:messagingAndIntegrasi a owl:Class ;
+    rdfs:label "Messaging & Integrasi" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:otherFeLibrary a owl:Class ;
+    rdfs:label "Other FE Library" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:prinsipAndMetodologi a owl:Class ;
+    rdfs:label "Prinsip & Metodologi" ;
+    rdfs:subClassOf virgo:analisisAndDokumentasiBisnis .
+
+virgo:projectManagement a owl:Class ;
+    rdfs:label "Project Management" ;
+    rdfs:subClassOf virgo:desainAndKolaborasi .
+
+virgo:buildUtilityLibrary a owl:Class ;
+    rdfs:label "Build Utility Library" ;
+    rdfs:subClassOf virgo:platformAndToolsKhusus .
+
+virgo:mobileArchitectureAndTools a owl:Class ;
+    rdfs:label "Mobile Architecture & Tools" ;
+    rdfs:subClassOf virgo:mobileDevelopment .
+
+virgo:otherBackendFramework a owl:Class ;
+    rdfs:label "Other Backend Framework" ;
+    rdfs:subClassOf virgo:backendDevelopment .
+
+virgo:pemodelanSistem a owl:Class ;
+    rdfs:label "Pemodelan Sistem" ;
+    rdfs:subClassOf virgo:analisisAndDokumentasiBisnis .
+
+virgo:remoteAndOsTools a owl:Class ;
+    rdfs:label "Remote & OS Tools" ;
+    rdfs:subClassOf virgo:devopsAndInfrastruktur .
+
+virgo:scriptingAndMarkup a owl:Class ;
+    rdfs:label "Scripting & Markup" ;
+    rdfs:subClassOf virgo:bahasaPemrograman .
+
+virgo:backendDevelopment a owl:Class ;
+    rdfs:label "Backend Development" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:biAndVisualisasi a owl:Class ;
+    rdfs:label "BI & Visualisasi" ;
+    rdfs:subClassOf virgo:dataAndAnalitik .
+
+virgo:dataFetchingAndForm a owl:Class ;
+    rdfs:label "Data Fetching & Form" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:manualTesting a owl:Class ;
+    rdfs:label "Manual Testing" ;
+    rdfs:subClassOf virgo:qualityAssurance .
+
+virgo:messageBroker a owl:Class ;
+    rdfs:label "Message Broker" ;
+    rdfs:subClassOf virgo:messagingAndIntegrasi .
+
+virgo:relationalDatabase a owl:Class ;
+    rdfs:label "Relational Database" ;
+    rdfs:subClassOf virgo:databaseAndStorage .
+
+virgo:apiAndProtokol a owl:Class ;
+    rdfs:label "API & Protokol" ;
+    rdfs:subClassOf virgo:messagingAndIntegrasi .
+
+virgo:artefakDokumentasi a owl:Class ;
+    rdfs:label "Artefak Dokumentasi" ;
+    rdfs:subClassOf virgo:analisisAndDokumentasiBisnis .
+
+virgo:buildAndDevToolsFe a owl:Class ;
+    rdfs:label "Build & Dev Tools FE" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:databaseTools a owl:Class ;
+    rdfs:label "Database Tools" ;
+    rdfs:subClassOf virgo:databaseAndStorage .
+
+virgo:diagramTeknis a owl:Class ;
+    rdfs:label "Diagram Teknis" ;
+    rdfs:subClassOf virgo:analisisAndDokumentasiBisnis .
+
+virgo:ormAndMigration a owl:Class ;
+    rdfs:label "ORM & Migration" ;
+    rdfs:subClassOf virgo:databaseAndStorage .
+
+virgo:uioruxDesignTools a owl:Class ;
+    rdfs:label "UI/UX Design Tools" ;
+    rdfs:subClassOf virgo:desainAndKolaborasi .
+
+virgo:backendLanguage a owl:Class ;
+    rdfs:label "Backend Language" ;
+    rdfs:subClassOf virgo:bahasaPemrograman .
+
+virgo:devopsAndInfrastruktur a owl:Class ;
+    rdfs:label "DevOps & Infrastruktur" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:javascript a owl:Class ;
+    rdfs:label "JavaScript" ;
+    rdfs:subClassOf virgo:scriptingAndMarkup .
+
+virgo:testAutomation a owl:Class ;
+    rdfs:label "Test Automation" ;
+    rdfs:subClassOf virgo:qualityAssurance .
+
+virgo:frontendDevelopment a owl:Class ;
+    rdfs:label "Frontend Development" ;
+    rdfs:subClassOf virgo:root .
+
+virgo:uiComponentLibrary a owl:Class ;
+    rdfs:label "UI Component Library" ;
+    rdfs:subClassOf virgo:frontendDevelopment .
+
+virgo:root a owl:Class ;
+    rdfs:label "IT Skills" .
+
+virgo:specializedTools a owl:Class ;
+    rdfs:label "Specialized Tools" ;
+    rdfs:subClassOf virgo:platformAndToolsKhusus .
+

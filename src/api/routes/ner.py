@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import time
 
-import httpx
 from fastapi import APIRouter, HTTPException, status
 from loguru import logger
 from pydantic import BaseModel, Field
@@ -26,7 +25,7 @@ from src.core.ollama_client import OllamaConnectionError, OllamaResponseError
 from src.modules.ner.extractor import NERExtractor
 from src.modules.ner.schemas import ExtractionResult
 
-router = APIRouter(prefix="/api/v1/ner", tags=["NER"])
+router = APIRouter(prefix="/ner", tags=["NER"])
 
 # Satu instance extractor dipakai ulang untuk seluruh request
 # (Dependency Injection — mudah diganti saat testing)
@@ -50,7 +49,7 @@ class NERResponse(BaseModel):
     """Response envelope endpoint NER."""
     success: bool
     data: ExtractionResult | None = None
-    latency_ms: float
+    #latency_ms: float
     error: str | None = None
 
 
@@ -63,8 +62,8 @@ class NERResponse(BaseModel):
     summary="Ekstraksi entitas kebutuhan talenta",
     description=(
         "Menerima kalimat natural kebutuhan talenta dan mengekstrak "
-        "enam slot entitas: skill, seniority, pengalaman, lokasi, "
-        "tanggal mulai, dan sektor proyek."
+        "lima slot entitas: skill, pengalaman, lokasi, "
+        "sektor proyek, dan pendidikan."
     ),
 )
 async def extract_entities(request: NERRequest) -> NERResponse:
@@ -96,6 +95,14 @@ async def extract_entities(request: NERRequest) -> NERResponse:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Respons dari Ollama tidak dapat diproses.",
+        )
+
+    except ValueError as exc:
+        latency_ms = _calc_latency(start_time)
+        logger.error(f"Gagal memproses respons (JSON tidak valid) | {exc}")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Respons dari Ollama bukan JSON valid. Detail: {exc}",
         )
 
     except Exception as exc:

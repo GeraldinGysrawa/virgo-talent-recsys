@@ -71,7 +71,7 @@ class SemanticSimilarityService:
         logger.info("SemanticSimilarityService: reload graf skill ...")
         self.initialize()
 
-    def rank_talents(self, required_skills: list[list[str]]) -> list[TalentSkillScore]:
+    def rank_talents(self, required_skills: list[list[str]]) -> tuple[list[TalentSkillScore], list[str]]:
         """
         Menghitung skor kemiripan skill seluruh talenta
         terhadap daftar skill requirement.
@@ -84,8 +84,10 @@ class SemanticSimilarityService:
 
         Returns
         -------
-        list[TalentSkillScore]
-            Diurutkan dari skor tertinggi ke terendah.
+        tuple[list[TalentSkillScore], list[str]]
+            Tuple yang berisi:
+            - Daftar talenta yang diurutkan dari skor tertinggi ke terendah
+            - Daftar skill dari requirement yang tidak ditemukan di ontologi
         """
         if self._matcher is None:
             raise RuntimeError(
@@ -93,6 +95,23 @@ class SemanticSimilarityService:
                 "Panggil initialize() dulu."
             )
         return self._matcher.match(required_skills)
+
+    def is_similarity_empty(self) -> bool:
+        """
+        Mengecek apakah relasi SKILL_SIMILARITY kosong di database.
+        Digunakan untuk pengkondisian auto-precompute saat ETL pertama kali.
+        """
+        query = "MATCH ()-[r:SKILL_SIMILARITY]->() RETURN count(r) AS c LIMIT 1"
+        try:
+            with self._driver.session(database=self._database) as session:
+                result = session.run(query)
+                record = result.single()
+                if record and record["c"] == 0:
+                    return True
+                return False
+        except Exception as exc:
+            logger.error(f"SemanticSimilarityService: gagal cek relasi similarity - {exc}")
+            return False
 
     def recompute_ic_similarity(self) -> PrecomputeReport:
         """
