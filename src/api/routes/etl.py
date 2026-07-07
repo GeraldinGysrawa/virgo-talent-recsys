@@ -82,7 +82,7 @@ def _get_similarity_service(request: Request):
     response_model=SyncResponse,
     summary="Trigger sinkronisasi Google Sheets → Neo4j",
 )
-async def sync_etl(request: Request) -> SyncResponse:
+def sync_etl(request: Request) -> SyncResponse:
     config = _build_config()
     logger.info("POST /etl/sync — pipeline dimulai.")
     try:
@@ -118,7 +118,7 @@ async def sync_etl(request: Request) -> SyncResponse:
     response_model=RecomputeICResponse,
     summary="Hitung ulang relasi SKILL_SIMILARITY di Neo4j",
 )
-async def recompute_ic(request: Request) -> RecomputeICResponse:
+def recompute_ic(request: Request) -> RecomputeICResponse:
     service = _get_similarity_service(request)
     logger.info("POST /etl/recompute-ic — mulai.")
     try:
