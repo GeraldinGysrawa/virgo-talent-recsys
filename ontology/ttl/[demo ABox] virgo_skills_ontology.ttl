@@ -90,7 +90,7 @@ virgo:pendidikan rdf:type owl:DatatypeProperty ,
 virgo:pengalamanTahun rdf:type owl:DatatypeProperty ,
                                owl:FunctionalProperty ;
                       rdfs:domain virgo:Talent ;
-                      rdfs:range xsd:decimal ;
+                      rdfs:range xsd:nonNegativeInteger ;
                       rdfs:label "pengalamanTahun" .
 
 
@@ -318,8 +318,7 @@ virgo:aws rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#axios
 virgo:axios rdf:type owl:Class ;
-            rdfs:subClassOf virgo:dataFetchingAndForm ;
-            rdfs:label "Axios" .
+            rdfs:subClassOf virgo:dataFetchingAndForm .
 
 
 ###  http://padepokan79.com/ontology/skill#azureDataStudio
@@ -590,8 +589,7 @@ virgo:dbdiagram rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#dbeaver
 virgo:dbeaver rdf:type owl:Class ;
-              rdfs:subClassOf virgo:databaseTools ;
-              rdfs:label "DBeaver" .
+              rdfs:subClassOf virgo:databaseTools .
 
 
 ###  http://padepokan79.com/ontology/skill#desainAndKolaborasi
@@ -1061,8 +1059,7 @@ virgo:jasperReport rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#java
 virgo:java rdf:type owl:Class ;
-           rdfs:subClassOf virgo:backendLanguage ;
-           rdfs:label "Java" .
+           rdfs:subClassOf virgo:backendLanguage .
 
 
 ###  http://padepokan79.com/ontology/skill#javaQuarkus
@@ -1197,8 +1194,7 @@ virgo:jwt rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#kafka
 virgo:kafka rdf:type owl:Class ;
-            rdfs:subClassOf virgo:messageBroker ;
-            rdfs:label "Kafka" .
+            rdfs:subClassOf virgo:messageBroker .
 
 
 ###  http://padepokan79.com/ontology/skill#katalonStudio
@@ -1306,8 +1302,7 @@ virgo:mariadb rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#materialUi
 virgo:materialUi rdf:type owl:Class ;
-                 rdfs:subClassOf virgo:uiComponentLibrary ;
-                 rdfs:label "Material UI" .
+                 rdfs:subClassOf virgo:uiComponentLibrary .
 
 
 ###  http://padepokan79.com/ontology/skill#maven
@@ -1336,8 +1331,7 @@ virgo:microfrontend rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#microservice
 virgo:microservice rdf:type owl:Class ;
-                   rdfs:subClassOf virgo:prinsipAndMetodologi ;
-                   rdfs:label "Microservice" .
+                   rdfs:subClassOf virgo:prinsipAndMetodologi .
 
 
 ###  http://padepokan79.com/ontology/skill#minio
@@ -1683,8 +1677,7 @@ virgo:postgis2 rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#postgresql
 virgo:postgresql rdf:type owl:Class ;
-                 rdfs:subClassOf virgo:relationalDatabase ;
-                 rdfs:label "PostgreSQL" .
+                 rdfs:subClassOf virgo:relationalDatabase .
 
 
 ###  http://padepokan79.com/ontology/skill#postman
@@ -1828,20 +1821,17 @@ virgo:reactNative rdf:type owl:Class ;
 ###  http://padepokan79.com/ontology/skill#reactjs
 virgo:reactjs rdf:type owl:Class ;
               rdfs:subClassOf virgo:frontendFramework ,
-                              virgo:javascript ;
-              rdfs:label "React.js" .
+                              virgo:javascript .
 
 
 ###  http://padepokan79.com/ontology/skill#redis
 virgo:redis rdf:type owl:Class ;
-            rdfs:subClassOf virgo:nosqlDatabase ;
-            rdfs:label "Redis" .
+            rdfs:subClassOf virgo:nosqlDatabase .
 
 
 ###  http://padepokan79.com/ontology/skill#redux
 virgo:redux rdf:type owl:Class ;
-            rdfs:subClassOf virgo:stateManagement ;
-            rdfs:label "Redux" .
+            rdfs:subClassOf virgo:stateManagement .
 
 
 ###  http://padepokan79.com/ontology/skill#relationalDatabase
@@ -1984,8 +1974,7 @@ virgo:snowflake2 rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#solace
 virgo:solace rdf:type owl:Class ;
-             rdfs:subClassOf virgo:messageBroker ;
-             rdfs:label "Solace" .
+             rdfs:subClassOf virgo:messageBroker .
 
 
 ###  http://padepokan79.com/ontology/skill#solidPrinciple
@@ -2015,8 +2004,7 @@ virgo:spiredoc rdf:type owl:Class ;
 ###  http://padepokan79.com/ontology/skill#springBoot
 virgo:springBoot rdf:type owl:Class ;
                  rdfs:subClassOf virgo:java ,
-                                 virgo:jvmFramework ;
-                 rdfs:label "Spring Boot" .
+                                 virgo:jvmFramework .
 
 
 ###  http://padepokan79.com/ontology/skill#sql
@@ -2177,7 +2165,8 @@ virgo:tsd rdf:type owl:Class ;
 
 ###  http://padepokan79.com/ontology/skill#typescript
 virgo:typescript rdf:type owl:Class ;
-                 rdfs:subClassOf virgo:scriptingAndMarkup ;
+                 rdfs:subClassOf virgo:scriptingAndMarkup ,
+                                 virgo:angular ;
                  rdfs:label "TypeScript" .
 
 
@@ -2391,6 +2380,163 @@ virgo:zustand rdf:type owl:Class ;
 <http://padepokan79.com/ontology/skill#uipath(rpa)> rdf:type owl:Class ;
                                                     rdfs:subClassOf virgo:lowcodeOrNocodeAndRpa ;
                                                     rdfs:label "UIPath (RPA)" .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://padepokan79.com/ontology/skill#axios
+virgo:axios rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#dbeaver
+virgo:dbeaver rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#java
+virgo:java rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#kafka
+virgo:kafka rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#materialUi
+virgo:materialUi rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#microservice
+virgo:microservice rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#place_bandung
+virgo:place_bandung rdf:type owl:NamedIndividual ,
+                             virgo:Placement ;
+                    virgo:namaLokasi "Bandung" .
+
+
+###  http://padepokan79.com/ontology/skill#place_tanpaBatasan
+virgo:place_tanpaBatasan rdf:type owl:NamedIndividual ,
+                                  virgo:Placement ;
+                         virgo:namaLokasi "Tanpa batasan" .
+
+
+###  http://padepokan79.com/ontology/skill#postgresql
+virgo:postgresql rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#proj_paymentGateway
+virgo:proj_paymentGateway rdf:type owl:NamedIndividual ,
+                                   virgo:Project ;
+                          virgo:namaProject "Payment Gateway" .
+
+
+###  http://padepokan79.com/ontology/skill#proj_treasurySystem
+virgo:proj_treasurySystem rdf:type owl:NamedIndividual ,
+                                   virgo:Project ;
+                          virgo:namaProject "Treasury System" .
+
+
+###  http://padepokan79.com/ontology/skill#reactjs
+virgo:reactjs rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#redis
+virgo:redis rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#redux
+virgo:redux rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#solace
+virgo:solace rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#springBoot
+virgo:springBoot rdf:type owl:NamedIndividual .
+
+
+###  http://padepokan79.com/ontology/skill#talent_20118037
+virgo:talent_20118037 rdf:type owl:NamedIndividual ,
+                               virgo:Talent ;
+                      virgo:assignedToProject virgo:proj_paymentGateway ;
+                      virgo:hasSkill virgo:dbeaver ,
+                                     virgo:java ,
+                                     virgo:kafka ,
+                                     virgo:microservice ,
+                                     virgo:postgresql ,
+                                     virgo:redis ,
+                                     virgo:springBoot ;
+                      virgo:prefersPlacement virgo:place_tanpaBatasan ;
+                      virgo:concernPerbankan "true"^^xsd:boolean ;
+                      virgo:namaLengkap "Resti aSisk viDe" ;
+                      virgo:nip "20118037" ;
+                      virgo:pendidikan "D3" ;
+                      virgo:pengalamanTahun "3"^^xsd:nonNegativeInteger ;
+                      virgo:projectEndDate "2024-07-08T00:00:00"^^xsd:dateTime ;
+                      virgo:projectStartDate "2023-08-17T00:00:00"^^xsd:dateTime ;
+                      virgo:statusPenugasan "transferable" .
+
+
+###  http://padepokan79.com/ontology/skill#talent_20718071
+virgo:talent_20718071 rdf:type owl:NamedIndividual ;
+                      virgo:assignedToProject virgo:proj_treasurySystem ;
+                      virgo:hasSkill virgo:axios ,
+                                     virgo:materialUi ,
+                                     virgo:reactjs ,
+                                     virgo:redux ,
+                                     virgo:solace ;
+                      virgo:prefersPlacement virgo:place_bandung ;
+                      virgo:concernPerbankan "true"^^xsd:boolean ;
+                      virgo:namaLengkap "Faejahr Abllahdu" ;
+                      virgo:nip "20718071" ;
+                      virgo:pendidikan "S1" ;
+                      virgo:pengalamanTahun "5"^^xsd:nonNegativeInteger ;
+                      virgo:projectEndDate "2024-09-23T00:00:00"^^xsd:dateTime ;
+                      virgo:projectStartDate "2024-05-12T00:00:00"^^xsd:dateTime ;
+                      virgo:statusPenugasan "replacable" .
+
+
+#################################################################
+#    Annotations
+#################################################################
+
+virgo:axios rdfs:label "Axios" .
+
+
+virgo:dbeaver rdfs:label "DBeaver" .
+
+
+virgo:java rdfs:label "Java" .
+
+
+virgo:kafka rdfs:label "Kafka" .
+
+
+virgo:materialUi rdfs:label "Material UI" .
+
+
+virgo:microservice rdfs:label "Microservice" .
+
+
+virgo:postgresql rdfs:label "PostgreSQL" .
+
+
+virgo:reactjs rdfs:label "React.js" .
+
+
+virgo:redis rdfs:label "Redis" .
+
+
+virgo:redux rdfs:label "Redux" .
+
+
+virgo:solace rdfs:label "Solace" .
+
+
+virgo:springBoot rdfs:label "Spring Boot" .
 
 
 #################################################################

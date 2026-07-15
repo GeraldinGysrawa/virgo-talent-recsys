@@ -61,7 +61,9 @@ class OntologyValidator:
         result = ValidationResult(nip=record.nip, is_valid=True)
 
         self._check_nip(record, result)
+        self._check_nama(record, result)
         self._check_placement(record, result)
+        self._check_status(record, result)
         self._check_skills(record, result)
 
         if not result.is_valid:
@@ -137,11 +139,25 @@ class OntologyValidator:
                 result.errors.append(f"Jenis Penempatan '{p}' tidak dikenal.")
 
     def _check_skills(self, record, result: ValidationResult) -> None:
+        if not record.skill_raw:
+            result.is_valid = False
+            result.errors.append("Keahlian (Skill) kosong.")
+            
         for label in record.skill_labels:
             if label.lower() not in self._skill_label_map:
                 result.warnings.append(
                     f"Label skill '{label}' tidak ditemukan di ontologi. Skill dilewati."
                 )
+
+    def _check_nama(self, record, result: ValidationResult) -> None:
+        if not str(record.nama_lengkap).strip():
+            result.is_valid = False
+            result.errors.append("Nama Lengkap kosong.")
+
+    def _check_status(self, record, result: ValidationResult) -> None:
+        if not record.status_penugasan:
+            result.is_valid = False
+            result.errors.append("Status Penugasan kosong atau tidak valid.")
 
     def _run_reasoner_check(self, record, result: ValidationResult) -> None:
         try:
