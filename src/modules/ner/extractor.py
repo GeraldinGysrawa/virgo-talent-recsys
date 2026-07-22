@@ -47,7 +47,7 @@ Aturan:
 - is_banking_project: boolean. True jika proyek terkait sektor perbankan, bank, fintech. False jika tidak disebutkan atau sektor lain (e-commerce, telco, dsb).
 - education: flat array jenjang pendidikan (opsi valid: "SMA/SMK", "D1", "D2", "D3", "D4", "S1", "S2", "S3").
   Aturan:
-  - Ekstrak hanya jenjang pendidikan yang disebutkan secara eksplisit dalam query (normalisasi: "sarjana" -> "S1", "diploma" -> "D3").
+  - Ekstrak hanya jenjang pendidikan yang disebutkan secara eksplisit dalam query (normalisasi: "sarjana" -> "S1", "sarjana terapan" -> "D4", "magister" -> "S2", "doktor" -> "S3", "diploma" -> "D1", "ahli pratama" -> "D1", "ahli muda" -> "D2", "ahli madya" -> "D3").
   - Jika query meminta batas minimal seperti "minimal D3", hanya kembalikan ["D3"]. Jangan pernah menambahkan SMA/SMK atau jenjang lainnya.
   - Jika query meminta beberapa opsi spesifik seperti "D3 atau S1", kembalikan ["D3", "S1"].
   - Jika tidak disebutkan, kembalikan null.
@@ -224,7 +224,7 @@ class NERExtractor:
             "s": "S1",
             "s.1": "S1",
             "sarjana": "S1",
-            "diploma": "D3",
+            "diploma": "D1",
             "d1": "D1",
             "d2": "D2",
             "d3": "D3",
@@ -255,14 +255,15 @@ class NERExtractor:
         import re
 
         edu_patterns = [
-            (r"\bs[./ ]?3\b|doktor",       "S3"),
-            (r"\bs[./ ]?2\b|magister",      "S2"),
-            (r"\bs[./ ]?1\b|sarjana",       "S1"),
-            (r"\bd[./ ]?4\b",               "D4"),
-            (r"\bd[./ ]?3\b|diploma",       "D3"),
-            (r"\bd[./ ]?2\b",               "D2"),
-            (r"\bd[./ ]?1\b",               "D1"),
-            (r"\bsma\b|\bsmk\b|sma/smk",   "SMA/SMK"),
+            (r"\bs[./ ]?3\b|doktor",                               "S3"),
+            (r"\bs[./ ]?2\b|magister",                             "S2"),
+            (r"\bd[./ ]?4\b|sarjana\s+terapan|diploma\s*4",       "D4"),
+            (r"\bs[./ ]?1\b|sarjana(?!\s+terapan)",                "S1"),
+            (r"\bd[./ ]?3\b|ahli\s+madya|\ba\.?md\b|diploma\s*3",  "D3"),
+            (r"\bd[./ ]?2\b|ahli\s+muda|\ba\.?ma\b|diploma\s*2",   "D2"),
+            (r"\bd[./ ]?1\b|ahli\s+pratama|\ba\.?p\b|diploma\s*1", "D1"),
+            (r"\bdiploma\b(?!\s*[1234])",                          "D1"), # Kata "diploma" umum tanpa spesifik level menjadi D1 (batas bawah)
+            (r"\bsma\b|\bsmk\b|sma/smk",                           "SMA/SMK"),
         ]
 
         found = []
