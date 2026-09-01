@@ -161,3 +161,10 @@ Dokumen tersebut menyediakan 12+ query Cypher untuk:
 ```bash
 pytest tests/ -v --cov=src
 ```
+
+## Cara Penggunaan (Telegram Bot)
+
+Kirimkan pesan kebutuhan talenta secara langsung ke bot Telegram Virgo. Sistem akan mengekstraksi entitas kriteria menggunakan LLM, menghitung skor kesesuaian berbasis *knowledge graph*, lalu memberikan daftar rekomendasi talenta terbaik.
+
+**Contoh Prompt:**
+> "Dibutuhkan Senior React.js Developer dengan pengalaman di sektor perbankan untuk penempatan proyek di Jakarta."
